@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="旅のしおり">
+  <rect width="192" height="192" rx="40" fill="#148096"/>
+  <path d="M52 45h66c12 0 22 10 22 22v82c0 7-8 11-13 7l-17-13-17 13-17-13-17 13c-5 4-13 0-13-7V52c0-4 3-7 7-7Z" fill="#fff"/>
+  <path d="M70 78h44M70 102h44M70 126h28" stroke="#148096" stroke-linecap="round" stroke-width="10"/>
+</svg>

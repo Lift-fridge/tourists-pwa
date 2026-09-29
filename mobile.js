@@ -29,20 +29,22 @@ const pwaDiagnosticsShow = document.getElementById('mobile-pwa-diagnostics-show'
 const pwaDiagnosticsResult = document.getElementById('mobile-pwa-diagnostics-result');
 const pwaDiagnosticsSection = document.getElementById('mobile-pwa-diagnostics');
 
-const PWA_SHELL_VERSION = 'v73';
+const PWA_SHELL_VERSION = 'v74';
 const PWA_CACHE_NAME = 'travel-shiori-mobile-shell-' + PWA_SHELL_VERSION;
 const PWA_SHELL_ASSETS = [
-  './index.html?pwa=v73',
-  './mobile.js?pwa=v73',
-  './mobile.css?pwa=v73',
-  './mobile-snapshot-store.js?pwa=v73',
-  './mobile-incoming-snapshot.js?pwa=v73',
-  './tourists-public-config.js?pwa=v73',
-  './assets/jsqr-1.4.0.js?pwa=v73',
-  './manifest.webmanifest?pwa=v73',
-  './assets/mobile-icon.svg?pwa=v73',
-  './assets/mobile-cover.png?pwa=v73',
-  './assets/mobile-clover.svg?pwa=v73',
+  './index.html?pwa=v74',
+  './mobile.js?pwa=v74',
+  './mobile.css?pwa=v74',
+  './mobile-snapshot-store.js?pwa=v74',
+  './mobile-incoming-snapshot.js?pwa=v74',
+  './tourists-public-config.js?pwa=v74',
+  './assets/jsqr-1.4.0.js?pwa=v74',
+  './manifest.webmanifest?pwa=v74',
+  './assets/icon-192.png?pwa=v74',
+  './assets/icon-512.png?pwa=v74',
+  './assets/icon-maskable-512.png?pwa=v74',
+  './assets/mobile-cover.png?pwa=v74',
+  './assets/mobile-clover.svg?pwa=v74',
 ];
 
 let selectedMobileDayKey = null;
@@ -754,7 +756,7 @@ function selectMobileTab(tab, {restoreState = null, sourceAlreadySaved = false} 
 function appendMobileItineraryClover(parent) {
   const clover = document.createElement('img');
   clover.className = 'mobile-itinerary-clover';
-  clover.src = './assets/mobile-clover.svg?pwa=v73';
+  clover.src = './assets/mobile-clover.svg?pwa=v74';
   clover.alt = '';
   clover.setAttribute('aria-hidden', 'true');
   parent.append(clover);
@@ -1871,7 +1873,7 @@ async function inspectWorker(worker) {
 function diagnosticWorkerLabel(worker, response) {
   if (!worker) return 'なし';
   return response?.shellVersion === PWA_SHELL_VERSION && response?.cacheName === PWA_CACHE_NAME
-    ? 'あり（v73）' : 'あり（v73確認不可）';
+    ? 'あり（v74）' : 'あり（v74確認不可）';
 }
 
 async function showPwaDiagnostics() {

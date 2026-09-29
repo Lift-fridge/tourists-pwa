@@ -1,8 +1,8 @@
 'use strict';
 
 // GitHub Pagesのproject siteでも、Workerの登録scopeを基準にshellを解決する。
-const CACHE_NAME = 'travel-shiori-mobile-shell-v73';
-const SHELL_VERSION = 'v73';
+const CACHE_NAME = 'travel-shiori-mobile-shell-v74';
+const SHELL_VERSION = 'v74';
 const SCOPE_URL = new URL(self.registration.scope);
 const SHELL_PATHS = [
   'index.html',
@@ -13,7 +13,9 @@ const SHELL_PATHS = [
   'tourists-public-config.js',
   'assets/jsqr-1.4.0.js',
   'manifest.webmanifest',
-  'assets/mobile-icon.svg',
+  'assets/icon-192.png',
+  'assets/icon-512.png',
+  'assets/icon-maskable-512.png',
   'assets/mobile-cover.png',
   'assets/mobile-clover.svg',
 ];

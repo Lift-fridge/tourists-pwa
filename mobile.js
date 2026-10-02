@@ -29,22 +29,22 @@ const pwaDiagnosticsShow = document.getElementById('mobile-pwa-diagnostics-show'
 const pwaDiagnosticsResult = document.getElementById('mobile-pwa-diagnostics-result');
 const pwaDiagnosticsSection = document.getElementById('mobile-pwa-diagnostics');
 
-const PWA_SHELL_VERSION = 'v74';
+const PWA_SHELL_VERSION = 'v77';
 const PWA_CACHE_NAME = 'travel-shiori-mobile-shell-' + PWA_SHELL_VERSION;
 const PWA_SHELL_ASSETS = [
-  './index.html?pwa=v74',
-  './mobile.js?pwa=v74',
-  './mobile.css?pwa=v74',
-  './mobile-snapshot-store.js?pwa=v74',
-  './mobile-incoming-snapshot.js?pwa=v74',
-  './tourists-public-config.js?pwa=v74',
-  './assets/jsqr-1.4.0.js?pwa=v74',
-  './manifest.webmanifest?pwa=v74',
-  './assets/icon-192.png?pwa=v74',
-  './assets/icon-512.png?pwa=v74',
-  './assets/icon-maskable-512.png?pwa=v74',
-  './assets/mobile-cover.png?pwa=v74',
-  './assets/mobile-clover.svg?pwa=v74',
+  './index.html?pwa=v77',
+  './mobile.js?pwa=v77',
+  './mobile.css?pwa=v77',
+  './mobile-snapshot-store.js?pwa=v77',
+  './mobile-incoming-snapshot.js?pwa=v77',
+  './tourists-public-config.js?pwa=v77',
+  './assets/jsqr-1.4.0.js?pwa=v77',
+  './manifest.webmanifest?pwa=v77',
+  './assets/icon-192.png?pwa=v77',
+  './assets/icon-512.png?pwa=v77',
+  './assets/icon-maskable-512.png?pwa=v77',
+  './assets/mobile-cover.png?pwa=v77',
+  './assets/mobile-clover.svg?pwa=v77',
 ];
 
 let selectedMobileDayKey = null;
@@ -81,7 +81,7 @@ let mobileFontSize = MOBILE_FONT_SIZE_DEFAULT;
 let mobileFontSizeWriteChain = Promise.resolve();
 const mobileFontSizeButtons = new Map();
 let mobileQrScannerSession = null;
-const TOURISTS_TRANSFER_PAYLOAD = /^tourists:v1:([A-Za-z0-9_-]{43})$/;
+const TOURISTS_TRANSFER_PAYLOAD = /^tourists:v1:([A-Za-z0-9_-]{43}):sha256:([0-9a-f]{64})$/;
 
 function mobilePreviewRequest() {
   if (!window.location || typeof window.location.search !== 'string') return {enabled: false, tripId: null};
@@ -756,7 +756,7 @@ function selectMobileTab(tab, {restoreState = null, sourceAlreadySaved = false} 
 function appendMobileItineraryClover(parent) {
   const clover = document.createElement('img');
   clover.className = 'mobile-itinerary-clover';
-  clover.src = './assets/mobile-clover.svg?pwa=v74';
+  clover.src = './assets/mobile-clover.svg?pwa=v77';
   clover.alt = '';
   clover.setAttribute('aria-hidden', 'true');
   parent.append(clover);
@@ -1699,6 +1699,7 @@ async function scanMobileQrScannerFrame(session) {
           savedTripListStatus.textContent = '旅行受取用QRではありません。PCで「スマホに保存」を実行して表示されたQRを読み取ってください。';
           return;
         }
+        void reportTouristsTransferTokenDiagnostic(match[1], match[2]);
         await receiveTouristsTemporaryTransfer(match[1]);
         return;
       }
@@ -1787,6 +1788,29 @@ async function fetchTouristsTemporaryTransfer(token) {
   return snapshot && typeof snapshot === 'object' && !Array.isArray(snapshot) ? snapshot : null;
 }
 
+async function reportTouristsTransferTokenDiagnostic(token, issuedTokenHash) {
+  const tokenLength = typeof token === 'string' ? token.length : 0;
+  const tokenFormatValid = typeof token === 'string' && /^[A-Za-z0-9_-]{43}$/.test(token);
+  let issuedTokenMatchesReceived = null;
+  try {
+    const subtle = globalThis.crypto?.subtle;
+    if (tokenFormatValid && typeof issuedTokenHash === 'string' && /^[0-9a-f]{64}$/.test(issuedTokenHash)
+        && subtle && typeof subtle.digest === 'function' && typeof globalThis.TextEncoder === 'function') {
+      const bytes = new globalThis.TextEncoder().encode(token);
+      const digest = await subtle.digest('SHA-256', bytes);
+      const receivedTokenHash = Array.from(new Uint8Array(digest), (value) => value.toString(16).padStart(2, '0')).join('');
+      issuedTokenMatchesReceived = receivedTokenHash === issuedTokenHash;
+    }
+  } catch (_) {
+    issuedTokenMatchesReceived = null;
+  }
+  globalThis.console?.info?.('TOURISTS QR token diagnostic', {
+    tokenLength,
+    tokenFormatValid,
+    issuedTokenMatchesReceived,
+  });
+}
+
 async function receiveTouristsTemporaryTransfer(token) {
   savedTripListStatus.textContent = '旅行を受け取っています…';
   savedTripReceiveShow.disabled = true;
@@ -1873,7 +1897,7 @@ async function inspectWorker(worker) {
 function diagnosticWorkerLabel(worker, response) {
   if (!worker) return 'なし';
   return response?.shellVersion === PWA_SHELL_VERSION && response?.cacheName === PWA_CACHE_NAME
-    ? 'あり（v74）' : 'あり（v74確認不可）';
+    ? 'あり（v77）' : 'あり（v77確認不可）';
 }
 
 async function showPwaDiagnostics() {

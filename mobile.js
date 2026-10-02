@@ -30,7 +30,8 @@ const pwaDiagnosticsResult = document.getElementById('mobile-pwa-diagnostics-res
 const pwaDiagnosticsSection = document.getElementById('mobile-pwa-diagnostics');
 
 const PWA_SHELL_VERSION = 'v78';
-const PWA_CACHE_NAME = 'travel-shiori-mobile-shell-' + PWA_SHELL_VERSION;
+const PWA_CACHE_PREFIX = 'travel-shiori-mobile-shell-';
+const PWA_CACHE_NAME = PWA_CACHE_PREFIX + PWA_SHELL_VERSION;
 const PWA_SHELL_ASSETS = [
   './index.html?pwa=v78',
   './mobile.js?pwa=v78',

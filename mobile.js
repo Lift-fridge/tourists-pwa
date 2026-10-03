@@ -29,23 +29,23 @@ const pwaDiagnosticsShow = document.getElementById('mobile-pwa-diagnostics-show'
 const pwaDiagnosticsResult = document.getElementById('mobile-pwa-diagnostics-result');
 const pwaDiagnosticsSection = document.getElementById('mobile-pwa-diagnostics');
 
-const PWA_SHELL_VERSION = 'v78';
+const PWA_SHELL_VERSION = 'v79';
 const PWA_CACHE_PREFIX = 'travel-shiori-mobile-shell-';
 const PWA_CACHE_NAME = PWA_CACHE_PREFIX + PWA_SHELL_VERSION;
 const PWA_SHELL_ASSETS = [
-  './index.html?pwa=v78',
-  './mobile.js?pwa=v78',
-  './mobile.css?pwa=v78',
-  './mobile-snapshot-store.js?pwa=v78',
-  './mobile-incoming-snapshot.js?pwa=v78',
-  './tourists-public-config.js?pwa=v78',
-  './assets/jsqr-1.4.0.js?pwa=v78',
-  './manifest.webmanifest?pwa=v78',
-  './assets/icon-192.png?pwa=v78',
-  './assets/icon-512.png?pwa=v78',
-  './assets/icon-maskable-512.png?pwa=v78',
-  './assets/mobile-cover.png?pwa=v78',
-  './assets/mobile-clover.svg?pwa=v78',
+  './index.html?pwa=v79',
+  './mobile.js?pwa=v79',
+  './mobile.css?pwa=v79',
+  './mobile-snapshot-store.js?pwa=v79',
+  './mobile-incoming-snapshot.js?pwa=v79',
+  './tourists-public-config.js?pwa=v79',
+  './assets/jsqr-1.4.0.js?pwa=v79',
+  './manifest.webmanifest?pwa=v79',
+  './assets/icon-192.png?pwa=v79',
+  './assets/icon-512.png?pwa=v79',
+  './assets/icon-maskable-512.png?pwa=v79',
+  './assets/mobile-cover.png?pwa=v79',
+  './assets/mobile-clover.svg?pwa=v79',
 ];
 
 let selectedMobileDayKey = null;
@@ -310,17 +310,21 @@ function mobileItemHeading(item) {
   return item.title;
 }
 
-function mobileItemTimeLabel(item) {
+function mobileItineraryTimeLabel(item) {
   const start = mobileItemStartTime(item);
   const end = mobileItemEndTime(item);
-  if (start && end) return start + '–' + end;
   if (start) return start;
   if (end) return end + 'まで';
   return '';
 }
 
 function mobileInfoTimeRange(item) {
-  return mobileItemTimeLabel(item);
+  const start = mobileItemStartTime(item);
+  const end = mobileItemEndTime(item);
+  if (start && end) return start + '–' + end;
+  if (start) return start;
+  if (end) return end + 'まで';
+  return '';
 }
 
 function appendMobileItineraryLine(parent, item, time, lineClassName, {reserveTimeColumn = false} = {}) {
@@ -349,7 +353,7 @@ function renderMobileItineraryCard(item, {
   card.className = 'mobile-itinerary-card mobile-itinerary-card-' + kind + ' ' + (isTransport
     ? 'mobile-itinerary-card-transport' : 'mobile-itinerary-card-stay');
   if (kind === 'formal' && Number.isInteger(itemIndex)) card.setAttribute('data-mobile-item-index', String(itemIndex));
-  const time = showTime ? mobileItemTimeLabel(item) : '';
+  const time = showTime ? mobileItineraryTimeLabel(item) : '';
   const lineOptions = {reserveTimeColumn: reserveTimeColumn || showTime};
   if (!isTransport) {
     appendMobileItineraryLine(card, item, time, 'mobile-itinerary-stay-line', lineOptions);
@@ -764,7 +768,7 @@ function selectMobileTab(tab, {restoreState = null, sourceAlreadySaved = false} 
 function appendMobileItineraryClover(parent) {
   const clover = document.createElement('img');
   clover.className = 'mobile-itinerary-clover';
-  clover.src = './assets/mobile-clover.svg?pwa=v78';
+  clover.src = './assets/mobile-clover.svg?pwa=v79';
   clover.alt = '';
   clover.setAttribute('aria-hidden', 'true');
   parent.append(clover);
@@ -1882,7 +1886,7 @@ async function inspectWorker(worker) {
 function diagnosticWorkerLabel(worker, response) {
   if (!worker) return 'なし';
   return response?.shellVersion === PWA_SHELL_VERSION && response?.cacheName === PWA_CACHE_NAME
-    ? 'あり（v78）' : 'あり（v78確認不可）';
+    ? 'あり（v79）' : 'あり（v79確認不可）';
 }
 
 async function showPwaDiagnostics() {

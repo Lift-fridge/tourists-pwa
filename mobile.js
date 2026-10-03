@@ -29,23 +29,23 @@ const pwaDiagnosticsShow = document.getElementById('mobile-pwa-diagnostics-show'
 const pwaDiagnosticsResult = document.getElementById('mobile-pwa-diagnostics-result');
 const pwaDiagnosticsSection = document.getElementById('mobile-pwa-diagnostics');
 
-const PWA_SHELL_VERSION = 'v79';
+const PWA_SHELL_VERSION = 'v80';
 const PWA_CACHE_PREFIX = 'travel-shiori-mobile-shell-';
 const PWA_CACHE_NAME = PWA_CACHE_PREFIX + PWA_SHELL_VERSION;
 const PWA_SHELL_ASSETS = [
-  './index.html?pwa=v79',
-  './mobile.js?pwa=v79',
-  './mobile.css?pwa=v79',
-  './mobile-snapshot-store.js?pwa=v79',
-  './mobile-incoming-snapshot.js?pwa=v79',
-  './tourists-public-config.js?pwa=v79',
-  './assets/jsqr-1.4.0.js?pwa=v79',
-  './manifest.webmanifest?pwa=v79',
-  './assets/icon-192.png?pwa=v79',
-  './assets/icon-512.png?pwa=v79',
-  './assets/icon-maskable-512.png?pwa=v79',
-  './assets/mobile-cover.png?pwa=v79',
-  './assets/mobile-clover.svg?pwa=v79',
+  './index.html?pwa=v80',
+  './mobile.js?pwa=v80',
+  './mobile.css?pwa=v80',
+  './mobile-snapshot-store.js?pwa=v80',
+  './mobile-incoming-snapshot.js?pwa=v80',
+  './tourists-public-config.js?pwa=v80',
+  './assets/jsqr-1.4.0.js?pwa=v80',
+  './manifest.webmanifest?pwa=v80',
+  './assets/icon-192.png?pwa=v80',
+  './assets/icon-512.png?pwa=v80',
+  './assets/icon-maskable-512.png?pwa=v80',
+  './assets/mobile-cover.png?pwa=v80',
+  './assets/mobile-clover.svg?pwa=v80',
 ];
 
 let selectedMobileDayKey = null;
@@ -267,7 +267,7 @@ function appendMobileExternalLink(parent, url, label, kind) {
 }
 
 function appendMobileItineraryLinks(parent, item) {
-  const links = document.createElement('div');
+  const links = document.createElement('span');
   links.className = 'mobile-itinerary-links';
   const mapsUrl = mobileExternalUrl(item.maps_url);
   if (mapsUrl) appendMobileExternalLink(links, mapsUrl, 'Google Mapsを開く', 'maps');
@@ -339,8 +339,8 @@ function appendMobileItineraryLine(parent, item, time, lineClassName, {reserveTi
   }
   const content = document.createElement('div');
   content.className = 'mobile-itinerary-card-content';
-  appendMobileText(content, 'h3', 'mobile-itinerary-card-title', mobileItemHeading(item));
-  appendMobileItineraryLinks(content, item);
+  const title = appendMobileText(content, 'h3', 'mobile-itinerary-card-title', mobileItemHeading(item));
+  if (title) appendMobileItineraryLinks(title, item);
   line.append(content);
   parent.append(line);
 }
@@ -381,8 +381,8 @@ function appendMobileInfoCard(parent, item, {
 
   const heading = document.createElement('div');
   heading.className = 'mobile-info-card-heading';
-  appendMobileText(heading, 'h3', 'mobile-info-card-title', mobileItemHeading(item));
-  appendMobileItineraryLinks(heading, item);
+  const title = appendMobileText(heading, 'h3', 'mobile-info-card-title', mobileItemHeading(item));
+  if (title) appendMobileItineraryLinks(title, item);
   card.append(heading);
 
   if (showTransport && isTransport) {
@@ -768,7 +768,7 @@ function selectMobileTab(tab, {restoreState = null, sourceAlreadySaved = false} 
 function appendMobileItineraryClover(parent) {
   const clover = document.createElement('img');
   clover.className = 'mobile-itinerary-clover';
-  clover.src = './assets/mobile-clover.svg?pwa=v79';
+  clover.src = './assets/mobile-clover.svg?pwa=v80';
   clover.alt = '';
   clover.setAttribute('aria-hidden', 'true');
   parent.append(clover);
@@ -1886,7 +1886,7 @@ async function inspectWorker(worker) {
 function diagnosticWorkerLabel(worker, response) {
   if (!worker) return 'なし';
   return response?.shellVersion === PWA_SHELL_VERSION && response?.cacheName === PWA_CACHE_NAME
-    ? 'あり（v79）' : 'あり（v79確認不可）';
+    ? 'あり（v80）' : 'あり（v80確認不可）';
 }
 
 async function showPwaDiagnostics() {

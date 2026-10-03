@@ -29,23 +29,23 @@ const pwaDiagnosticsShow = document.getElementById('mobile-pwa-diagnostics-show'
 const pwaDiagnosticsResult = document.getElementById('mobile-pwa-diagnostics-result');
 const pwaDiagnosticsSection = document.getElementById('mobile-pwa-diagnostics');
 
-const PWA_SHELL_VERSION = 'v80';
+const PWA_SHELL_VERSION = 'v82';
 const PWA_CACHE_PREFIX = 'travel-shiori-mobile-shell-';
 const PWA_CACHE_NAME = PWA_CACHE_PREFIX + PWA_SHELL_VERSION;
 const PWA_SHELL_ASSETS = [
-  './index.html?pwa=v80',
-  './mobile.js?pwa=v80',
-  './mobile.css?pwa=v80',
-  './mobile-snapshot-store.js?pwa=v80',
-  './mobile-incoming-snapshot.js?pwa=v80',
-  './tourists-public-config.js?pwa=v80',
-  './assets/jsqr-1.4.0.js?pwa=v80',
-  './manifest.webmanifest?pwa=v80',
-  './assets/icon-192.png?pwa=v80',
-  './assets/icon-512.png?pwa=v80',
-  './assets/icon-maskable-512.png?pwa=v80',
-  './assets/mobile-cover.png?pwa=v80',
-  './assets/mobile-clover.svg?pwa=v80',
+  './index.html?pwa=v82',
+  './mobile.js?pwa=v82',
+  './mobile.css?pwa=v82',
+  './mobile-snapshot-store.js?pwa=v82',
+  './mobile-incoming-snapshot.js?pwa=v82',
+  './tourists-public-config.js?pwa=v82',
+  './assets/jsqr-1.4.0.js?pwa=v82',
+  './manifest.webmanifest?pwa=v82',
+  './assets/icon-192.png?pwa=v82',
+  './assets/icon-512.png?pwa=v82',
+  './assets/icon-maskable-512.png?pwa=v82',
+  './assets/mobile-cover.png?pwa=v82',
+  './assets/mobile-clover.svg?pwa=v82',
 ];
 
 let selectedMobileDayKey = null;
@@ -333,8 +333,19 @@ function appendMobileItineraryLine(parent, item, time, lineClassName, {reserveTi
   if (time || reserveTimeColumn) {
     const timeCell = document.createElement('p');
     timeCell.className = 'mobile-itinerary-card-time';
-    if (time) timeCell.textContent = time;
-    else timeCell.setAttribute('aria-hidden', 'true');
+    if (time) {
+      if (!mobileItemStartTime(item) && mobileItemEndTime(item) && time.endsWith('まで')) {
+        timeCell.append(document.createTextNode(time.slice(0, -2)));
+        const suffix = document.createElement('span');
+        suffix.className = 'mobile-itinerary-time-suffix';
+        suffix.textContent = 'まで';
+        timeCell.append(suffix);
+      } else {
+        timeCell.textContent = time;
+      }
+    } else {
+      timeCell.setAttribute('aria-hidden', 'true');
+    }
     line.append(timeCell);
   }
   const content = document.createElement('div');
@@ -768,7 +779,7 @@ function selectMobileTab(tab, {restoreState = null, sourceAlreadySaved = false} 
 function appendMobileItineraryClover(parent) {
   const clover = document.createElement('img');
   clover.className = 'mobile-itinerary-clover';
-  clover.src = './assets/mobile-clover.svg?pwa=v80';
+  clover.src = './assets/mobile-clover.svg?pwa=v82';
   clover.alt = '';
   clover.setAttribute('aria-hidden', 'true');
   parent.append(clover);
@@ -1886,7 +1897,7 @@ async function inspectWorker(worker) {
 function diagnosticWorkerLabel(worker, response) {
   if (!worker) return 'なし';
   return response?.shellVersion === PWA_SHELL_VERSION && response?.cacheName === PWA_CACHE_NAME
-    ? 'あり（v80）' : 'あり（v80確認不可）';
+    ? 'あり（v82）' : 'あり（v82確認不可）';
 }
 
 async function showPwaDiagnostics() {

@@ -1828,6 +1828,7 @@ async function initializeMobileHome() {
 }
 
 function prepareMobilePreview() {
+  if (mobilePreview.enabled) homeTitle.textContent = 'TOURISTS';
   savedTripsShow.disabled = true;
   savedTripsShow.setAttribute('aria-disabled', 'true');
   savedTripList.hidden = true;

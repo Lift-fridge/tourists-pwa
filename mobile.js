@@ -29,23 +29,23 @@ const pwaDiagnosticsShow = document.getElementById('mobile-pwa-diagnostics-show'
 const pwaDiagnosticsResult = document.getElementById('mobile-pwa-diagnostics-result');
 const pwaDiagnosticsSection = document.getElementById('mobile-pwa-diagnostics');
 
-const PWA_SHELL_VERSION = 'v83';
+const PWA_SHELL_VERSION = 'v84';
 const PWA_CACHE_PREFIX = 'travel-shiori-mobile-shell-';
 const PWA_CACHE_NAME = PWA_CACHE_PREFIX + PWA_SHELL_VERSION;
 const PWA_SHELL_ASSETS = [
-  './index.html?pwa=v83',
-  './mobile.js?pwa=v83',
-  './mobile.css?pwa=v83',
-  './mobile-snapshot-store.js?pwa=v83',
-  './mobile-incoming-snapshot.js?pwa=v83',
-  './tourists-public-config.js?pwa=v83',
-  './assets/jsqr-1.4.0.js?pwa=v83',
-  './manifest.webmanifest?pwa=v83',
-  './assets/icon-192.png?pwa=v83',
-  './assets/icon-512.png?pwa=v83',
-  './assets/icon-maskable-512.png?pwa=v83',
-  './assets/mobile-cover.png?pwa=v83',
-  './assets/mobile-clover.svg?pwa=v83',
+  './index.html?pwa=v84',
+  './mobile.js?pwa=v84',
+  './mobile.css?pwa=v84',
+  './mobile-snapshot-store.js?pwa=v84',
+  './mobile-incoming-snapshot.js?pwa=v84',
+  './tourists-public-config.js?pwa=v84',
+  './assets/jsqr-1.4.0.js?pwa=v84',
+  './manifest.webmanifest?pwa=v84',
+  './assets/icon-192.png?pwa=v84',
+  './assets/icon-512.png?pwa=v84',
+  './assets/icon-maskable-512.png?pwa=v84',
+  './assets/mobile-cover.png?pwa=v84',
+  './assets/mobile-clover.svg?pwa=v84',
 ];
 
 let selectedMobileDayKey = null;
@@ -764,6 +764,10 @@ function scheduleMobileMemoScrollability() {
   else window.setTimeout(apply, 0);
 }
 
+function mobileTabAriaLabel(tab) {
+  return tab === 'info' ? '情報' : tab === 'memo' ? '旅行メモ' : '旅程';
+}
+
 function setMobileActiveTab(tab) {
   mobileActiveTab = tab === 'info' || tab === 'memo' ? tab : 'itinerary';
   const activeClass = 'mobile-itinerary-tab mobile-itinerary-tab-current';
@@ -771,13 +775,7 @@ function setMobileActiveTab(tab) {
   mobileItineraryTabInfo.className = mobileActiveTab === 'info' ? activeClass : inactiveClass;
   mobileItineraryTabItinerary.className = mobileActiveTab === 'itinerary' ? activeClass : inactiveClass;
   mobileItineraryTabMemo.className = mobileActiveTab === 'memo' ? activeClass : inactiveClass;
-  if (mobileActiveTab === 'info') {
-    mobileItinerary.setAttribute('aria-label', '情報');
-  } else if (mobileActiveTab === 'memo') {
-    mobileItinerary.setAttribute('aria-label', '旅行メモ');
-  } else {
-    mobileItinerary.setAttribute('aria-label', '旅程');
-  }
+  mobileItinerary.setAttribute('aria-label', mobileTabAriaLabel(mobileActiveTab));
   [mobileItineraryTabInfo, mobileItineraryTabItinerary, mobileItineraryTabMemo].forEach((button) => {
     if (button === (mobileActiveTab === 'info' ? mobileItineraryTabInfo
       : mobileActiveTab === 'memo' ? mobileItineraryTabMemo : mobileItineraryTabItinerary)) {
@@ -803,7 +801,7 @@ function selectMobileTab(tab, {restoreState = null, sourceAlreadySaved = false} 
 function appendMobileItineraryClover(parent) {
   const clover = document.createElement('img');
   clover.className = 'mobile-itinerary-clover';
-  clover.src = './assets/mobile-clover.svg?pwa=v83';
+  clover.src = './assets/mobile-clover.svg?pwa=v84';
   clover.alt = '';
   clover.setAttribute('aria-hidden', 'true');
   parent.append(clover);
@@ -958,7 +956,8 @@ function mobileSwipeHeader(snapshot, tab, selected) {
 
 function mobileSwipePane(snapshot, tab, selected, state) {
   const pane = document.createElement('section');
-  pane.className = 'mobile-tab-swipe-pane';
+  pane.className = 'mobile-itinerary mobile-tab-swipe-pane';
+  pane.setAttribute('aria-label', mobileTabAriaLabel(tab));
   pane.setAttribute('aria-hidden', 'true');
   pane.append(mobileSwipeHeader(snapshot, tab, selected));
   const days = document.createElement('div');
@@ -1392,6 +1391,10 @@ function setMobileCoverOffset(offset, settle = false) {
   mobileCover.style.transform = 'translate3d(0, ' + Math.min(0, offset) + 'px, 0)';
 }
 
+function setMobileCoverTransitionActive(enabled) {
+  document.body.classList.toggle('mobile-cover-transition-active', enabled);
+}
+
 function resetMobileCoverPosition() {
   clearMobileCoverSettleTimer();
   mobileCoverPointer = null;
@@ -1401,6 +1404,7 @@ function resetMobileCoverPosition() {
   mobileCoverSettleTimer = window.setTimeout(() => {
     mobileCover.style.transition = '';
     mobileTripContent.hidden = true;
+    setMobileCoverTransitionActive(false);
     mobileCoverSettleTimer = null;
   }, MOBILE_COVER_SETTLE_MS);
 }
@@ -1409,8 +1413,9 @@ function showMobileItineraryFromCover() {
   clearMobileCoverSettleTimer();
   mobileCoverPointer = null;
   mobileCoverLeaving = true;
-  // 表紙の下に既存rendererの旅程を出し、表紙だけを短く上へ抜く。
+  // 表紙の下に完成状態の旅程を出し、表紙だけを短く上へ抜く。
   mobileTripContent.hidden = false;
+  setMobileCoverTransitionActive(true);
   setMobileCoverOffset(-mobileCoverHeight(), true);
   mobileCoverSettleTimer = window.setTimeout(() => {
     mobileCoverSettleTimer = null;
@@ -1428,6 +1433,7 @@ function moveMobileCoverByWheel(direction) {
 }
 
 function startMobileCoverSwipe(event) {
+  if (event.target?.closest?.('.mobile-cover-brand')) return;
   if (mobileCover.hidden || mobileCoverLeaving
       || (event.pointerType === 'mouse' && (event.button !== 0 || mobilePreview.enabled))) return;
   // 復帰アニメーション中でも次のdragは受け付け、遅延状態を持ち越さない。
@@ -1441,7 +1447,6 @@ function startMobileCoverSwipe(event) {
     direction: null,
   };
   mobileCover.setPointerCapture?.(event.pointerId);
-  mobileTripContent.hidden = false;
   setMobileCoverOffset(0);
 }
 
@@ -1457,6 +1462,10 @@ function moveMobileCoverSwipe(event) {
   if (gesture.direction !== 'vertical') return;
   gesture.currentY = event.clientY;
   gesture.offset = Math.min(0, deltaY);
+  if (gesture.offset < 0) {
+    mobileTripContent.hidden = false;
+    setMobileCoverTransitionActive(true);
+  }
   setMobileCoverOffset(gesture.offset);
 }
 
@@ -1531,6 +1540,7 @@ function showMobileCover(snapshot, {preservePreviewShiftLatch = false} = {}) {
   mobileCover.hidden = false;
   mobileTripContent.hidden = true;
   savedTripList.hidden = true;
+  setMobileCoverTransitionActive(false);
   document.body.classList.remove('mobile-itinerary-active');
   document.body.classList.remove('mobile-saved-trip-list-active');
   document.body.classList.add('mobile-cover-active');
@@ -1543,6 +1553,7 @@ function hideMobileCover() {
   mobileCover.style.transform = '';
   mobileCover.style.transition = '';
   mobileCover.hidden = true;
+  setMobileCoverTransitionActive(false);
   document.body.classList.remove('mobile-cover-active');
   document.body.classList.remove('mobile-itinerary-active');
 }
@@ -1933,7 +1944,7 @@ async function inspectWorker(worker) {
 function diagnosticWorkerLabel(worker, response) {
   if (!worker) return 'なし';
   return response?.shellVersion === PWA_SHELL_VERSION && response?.cacheName === PWA_CACHE_NAME
-    ? 'あり（v83）' : 'あり（v83確認不可）';
+    ? 'あり（v84）' : 'あり（v84確認不可）';
 }
 
 async function showPwaDiagnostics() {

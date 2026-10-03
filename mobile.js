@@ -29,23 +29,23 @@ const pwaDiagnosticsShow = document.getElementById('mobile-pwa-diagnostics-show'
 const pwaDiagnosticsResult = document.getElementById('mobile-pwa-diagnostics-result');
 const pwaDiagnosticsSection = document.getElementById('mobile-pwa-diagnostics');
 
-const PWA_SHELL_VERSION = 'v86';
+const PWA_SHELL_VERSION = 'v87';
 const PWA_CACHE_PREFIX = 'travel-shiori-mobile-shell-';
 const PWA_CACHE_NAME = PWA_CACHE_PREFIX + PWA_SHELL_VERSION;
 const PWA_SHELL_ASSETS = [
-  './index.html?pwa=v86',
-  './mobile.js?pwa=v86',
-  './mobile.css?pwa=v86',
-  './mobile-snapshot-store.js?pwa=v86',
-  './mobile-incoming-snapshot.js?pwa=v86',
-  './tourists-public-config.js?pwa=v86',
-  './assets/jsqr-1.4.0.js?pwa=v86',
-  './manifest.webmanifest?pwa=v86',
-  './assets/icon-192.png?pwa=v86',
-  './assets/icon-512.png?pwa=v86',
-  './assets/icon-maskable-512.png?pwa=v86',
-  './assets/mobile-cover.png?pwa=v86',
-  './assets/mobile-clover.svg?pwa=v86',
+  './index.html?pwa=v87',
+  './mobile.js?pwa=v87',
+  './mobile.css?pwa=v87',
+  './mobile-snapshot-store.js?pwa=v87',
+  './mobile-incoming-snapshot.js?pwa=v87',
+  './tourists-public-config.js?pwa=v87',
+  './assets/jsqr-1.4.0.js?pwa=v87',
+  './manifest.webmanifest?pwa=v87',
+  './assets/icon-192.png?pwa=v87',
+  './assets/icon-512.png?pwa=v87',
+  './assets/icon-maskable-512.png?pwa=v87',
+  './assets/mobile-cover.png?pwa=v87',
+  './assets/mobile-clover.svg?pwa=v87',
 ];
 
 let selectedMobileDayKey = null;
@@ -801,7 +801,7 @@ function selectMobileTab(tab, {restoreState = null, sourceAlreadySaved = false} 
 function appendMobileItineraryClover(parent) {
   const clover = document.createElement('img');
   clover.className = 'mobile-itinerary-clover';
-  clover.src = './assets/mobile-clover.svg?pwa=v86';
+  clover.src = './assets/mobile-clover.svg?pwa=v87';
   clover.alt = '';
   clover.setAttribute('aria-hidden', 'true');
   parent.append(clover);
@@ -950,7 +950,7 @@ function mobileSwipeHeader(snapshot, tab, selected) {
   return header;
 }
 
-function mobileSwipePane(snapshot, tab, selected, state) {
+function mobileSwipePane(snapshot, tab, selected, state, {preserveViewport = false} = {}) {
   const pane = document.createElement('section');
   pane.className = 'mobile-itinerary mobile-tab-swipe-pane';
   pane.setAttribute('aria-label', mobileTabAriaLabel(tab));
@@ -962,7 +962,7 @@ function mobileSwipePane(snapshot, tab, selected, state) {
   if (body) days.append(body);
   pane.append(days);
   pane.scrollTop = Math.max(0, Number(state?.top) || 0);
-  if (Number.isInteger(state?.itemIndex)) {
+  if (!preserveViewport && Number.isInteger(state?.itemIndex)) {
     const card = pane.querySelector?.(mobileFormalCardSelector(tab)
       + '[data-mobile-item-index="' + state.itemIndex + '"]');
     const rect = card?.getBoundingClientRect?.();
@@ -1044,7 +1044,7 @@ function mobileItineraryDaySwipeCandidate(gesture) {
 }
 
 function mobileDaySwipePane(snapshot, tab, selected, state) {
-  const pane = mobileSwipePane(snapshot, tab, selected, state);
+  const pane = mobileSwipePane(snapshot, tab, selected, state, {preserveViewport: true});
   pane.className = 'mobile-itinerary mobile-day-swipe-pane';
   return pane;
 }
@@ -2026,7 +2026,7 @@ async function inspectWorker(worker) {
 function diagnosticWorkerLabel(worker, response) {
   if (!worker) return 'なし';
   return response?.shellVersion === PWA_SHELL_VERSION && response?.cacheName === PWA_CACHE_NAME
-    ? 'あり（v86）' : 'あり（v86確認不可）';
+    ? 'あり（v87）' : 'あり（v87確認不可）';
 }
 
 async function showPwaDiagnostics() {

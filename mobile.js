@@ -29,23 +29,23 @@ const pwaDiagnosticsShow = document.getElementById('mobile-pwa-diagnostics-show'
 const pwaDiagnosticsResult = document.getElementById('mobile-pwa-diagnostics-result');
 const pwaDiagnosticsSection = document.getElementById('mobile-pwa-diagnostics');
 
-const PWA_SHELL_VERSION = 'v82';
+const PWA_SHELL_VERSION = 'v83';
 const PWA_CACHE_PREFIX = 'travel-shiori-mobile-shell-';
 const PWA_CACHE_NAME = PWA_CACHE_PREFIX + PWA_SHELL_VERSION;
 const PWA_SHELL_ASSETS = [
-  './index.html?pwa=v82',
-  './mobile.js?pwa=v82',
-  './mobile.css?pwa=v82',
-  './mobile-snapshot-store.js?pwa=v82',
-  './mobile-incoming-snapshot.js?pwa=v82',
-  './tourists-public-config.js?pwa=v82',
-  './assets/jsqr-1.4.0.js?pwa=v82',
-  './manifest.webmanifest?pwa=v82',
-  './assets/icon-192.png?pwa=v82',
-  './assets/icon-512.png?pwa=v82',
-  './assets/icon-maskable-512.png?pwa=v82',
-  './assets/mobile-cover.png?pwa=v82',
-  './assets/mobile-clover.svg?pwa=v82',
+  './index.html?pwa=v83',
+  './mobile.js?pwa=v83',
+  './mobile.css?pwa=v83',
+  './mobile-snapshot-store.js?pwa=v83',
+  './mobile-incoming-snapshot.js?pwa=v83',
+  './tourists-public-config.js?pwa=v83',
+  './assets/jsqr-1.4.0.js?pwa=v83',
+  './manifest.webmanifest?pwa=v83',
+  './assets/icon-192.png?pwa=v83',
+  './assets/icon-512.png?pwa=v83',
+  './assets/icon-maskable-512.png?pwa=v83',
+  './assets/mobile-cover.png?pwa=v83',
+  './assets/mobile-clover.svg?pwa=v83',
 ];
 
 let selectedMobileDayKey = null;
@@ -357,7 +357,7 @@ function appendMobileItineraryLine(parent, item, time, lineClassName, {reserveTi
 }
 
 function renderMobileItineraryCard(item, {
-  kind = 'formal', showTime = true, reserveTimeColumn = false, itemIndex = null,
+  kind = 'formal', showTime = true, reserveTimeColumn = false, showTransport = true, itemIndex = null,
 } = {}) {
   const card = document.createElement('article');
   const isTransport = item.item_type === 'transport';
@@ -376,7 +376,7 @@ function renderMobileItineraryCard(item, {
   secondLine.className = 'mobile-itinerary-movement-second-line';
   const transport = typeof item.transport_mode === 'string' ? item.transport_mode.trim() : '';
   if (transport) appendMobileText(secondLine, 'p', 'mobile-itinerary-card-transport-mode', transport);
-  if (secondLine.childElementCount) card.append(secondLine);
+  if (showTransport && secondLine.childElementCount) card.append(secondLine);
   return card;
 }
 
@@ -414,6 +414,18 @@ function appendMobileInfoOptions(parent, item) {
     .forEach((option) => appendMobileInfoCard(options, option, {
       kind: 'option', showTime: false, showTransport: false,
     }));
+  if (options.childElementCount) parent.append(options);
+}
+
+function appendMobileItineraryOptions(parent, item) {
+  if (!Array.isArray(item.options) || !item.options.length) return;
+  const options = document.createElement('section');
+  options.className = 'mobile-itinerary-options';
+  item.options
+    .filter((option) => option && typeof option === 'object' && option.placement === 'option')
+    .forEach((option) => options.append(renderMobileItineraryCard(option, {
+      kind: 'option', showTime: false, reserveTimeColumn: true, showTransport: false,
+    })));
   if (options.childElementCount) parent.append(options);
 }
 
@@ -740,6 +752,18 @@ function setSelectedMobileDay(dayKey) {
   });
 }
 
+function scheduleMobileMemoScrollability() {
+  const apply = () => {
+    const root = document.scrollingElement || document.documentElement || document.body;
+    const viewport = Math.max(0, Number(root?.clientHeight) || Number(window.innerHeight) || 0);
+    const contentHeight = Math.max(0, Number(root?.scrollHeight) || 0);
+    const fitsViewport = mobileActiveTab === 'memo' && viewport > 0 && contentHeight <= viewport + 1;
+    document.body.classList.toggle('mobile-memo-viewport-fit', fitsViewport);
+  };
+  if (typeof window.requestAnimationFrame === 'function') window.requestAnimationFrame(apply);
+  else window.setTimeout(apply, 0);
+}
+
 function setMobileActiveTab(tab) {
   mobileActiveTab = tab === 'info' || tab === 'memo' ? tab : 'itinerary';
   const activeClass = 'mobile-itinerary-tab mobile-itinerary-tab-current';
@@ -779,7 +803,7 @@ function selectMobileTab(tab, {restoreState = null, sourceAlreadySaved = false} 
 function appendMobileItineraryClover(parent) {
   const clover = document.createElement('img');
   clover.className = 'mobile-itinerary-clover';
-  clover.src = './assets/mobile-clover.svg?pwa=v82';
+  clover.src = './assets/mobile-clover.svg?pwa=v83';
   clover.alt = '';
   clover.setAttribute('aria-hidden', 'true');
   parent.append(clover);
@@ -912,19 +936,22 @@ function mobileSwipeHeader(snapshot, tab, selected) {
     else button.removeAttribute('aria-current');
   });
   const dateNav = header.querySelector?.('.mobile-itinerary-date-nav');
-  if (dateNav) {
-    dateNav.hidden = tab === 'memo';
-    if (tab !== 'memo' && selected?.day) {
-      dateNav.replaceChildren();
-      const currentButtons = mobileItineraryDayButtons;
-      mobileItineraryDayButtons = new Map();
-      appendMobileItineraryWindowSlot(dateNav, selected.days, selected.selectedDayIndex, -1, snapshot);
-      appendMobileItineraryDaySlot(dateNav, selected.days[selected.selectedDayIndex - 1], snapshot);
-      appendMobileItineraryDaySlot(dateNav, selected.day, snapshot);
-      appendMobileItineraryDaySlot(dateNav, selected.days[selected.selectedDayIndex + 1], snapshot);
-      appendMobileItineraryWindowSlot(dateNav, selected.days, selected.selectedDayIndex, 1, snapshot);
-      mobileItineraryDayButtons = currentButtons;
-    }
+  if (dateNav && tab === 'memo') {
+    dateNav.remove?.();
+  } else if (dateNav && selected?.day) {
+    dateNav.replaceChildren();
+    const currentButtons = mobileItineraryDayButtons;
+    const swipeButtons = new Map();
+    mobileItineraryDayButtons = swipeButtons;
+    appendMobileItineraryWindowSlot(dateNav, selected.days, selected.selectedDayIndex, -1, snapshot);
+    appendMobileItineraryDaySlot(dateNav, selected.days[selected.selectedDayIndex - 1], snapshot);
+    appendMobileItineraryDaySlot(dateNav, selected.day, snapshot);
+    appendMobileItineraryDaySlot(dateNav, selected.days[selected.selectedDayIndex + 1], snapshot);
+    appendMobileItineraryWindowSlot(dateNav, selected.days, selected.selectedDayIndex, 1, snapshot);
+    swipeButtons.forEach((button, dayKey) => {
+      if (dayKey === selectedMobileDayKey) button.setAttribute('aria-current', 'date');
+    });
+    mobileItineraryDayButtons = currentButtons;
   }
   return header;
 }
@@ -1285,7 +1312,7 @@ function renderMobileItineraryDay(snapshot, day, selectedDayIndex, days) {
     .filter((item) => item && typeof item === 'object' && item.placement === 'day')
     .forEach((item, index) => {
       daySection.append(renderMobileItineraryCard(item, {itemIndex: index}));
-      appendMobileInfoOptions(daySection, item);
+      appendMobileItineraryOptions(daySection, item);
     });
   if (selectedDayIndex === days.length - 1) {
     appendMobileCandidateSection(daySection, snapshot, (candidate) => {
@@ -1328,6 +1355,7 @@ function renderMobileItinerary(snapshot) {
   setSelectedMobileDay(selectedMobileDayKey);
   setMobileActiveTab(mobileActiveTab);
   mobileItinerary.hidden = false;
+  scheduleMobileMemoScrollability();
 }
 
 function orderedSnapshots(snapshots) {
@@ -1368,9 +1396,11 @@ function resetMobileCoverPosition() {
   clearMobileCoverSettleTimer();
   mobileCoverPointer = null;
   mobileCoverLeaving = false;
+  mobileTripContent.hidden = false;
   setMobileCoverOffset(0, true);
   mobileCoverSettleTimer = window.setTimeout(() => {
     mobileCover.style.transition = '';
+    mobileTripContent.hidden = true;
     mobileCoverSettleTimer = null;
   }, MOBILE_COVER_SETTLE_MS);
 }
@@ -1411,6 +1441,7 @@ function startMobileCoverSwipe(event) {
     direction: null,
   };
   mobileCover.setPointerCapture?.(event.pointerId);
+  mobileTripContent.hidden = false;
   setMobileCoverOffset(0);
 }
 
@@ -1568,8 +1599,8 @@ function showSnapshot(snapshot) {
   homeDates.textContent = range;
   homeDates.hidden = false;
   homeMessage.textContent = '保存した旅のしおりを読み込みました。';
-  savedTripsShow.disabled = mobilePreview.enabled;
-  savedTripsShow.setAttribute('aria-disabled', String(mobilePreview.enabled));
+  savedTripsShow.disabled = false;
+  savedTripsShow.setAttribute('aria-disabled', 'false');
   renderMobileItinerary(snapshot);
   showMobileCover(snapshot);
 }
@@ -1625,13 +1656,16 @@ function renderSavedTripList(snapshots) {
       crossfadeSavedTripListToCover();
     });
 
-    const remove = document.createElement('button');
-    remove.type = 'button';
-    remove.className = 'mobile-saved-trip-delete';
-    remove.textContent = '…';
-    remove.setAttribute('aria-label', mobileTripTitle(snapshot) + 'をこのiPhoneから削除');
-    remove.addEventListener('click', (event) => { void removeSavedTrip(snapshot, event); });
-    row.append(item, remove);
+    row.append(item);
+    if (!mobilePreview.enabled) {
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'mobile-saved-trip-delete';
+      remove.textContent = '…';
+      remove.setAttribute('aria-label', mobileTripTitle(snapshot) + 'をこのiPhoneから削除');
+      remove.addEventListener('click', (event) => { void removeSavedTrip(snapshot, event); });
+      row.append(remove);
+    }
     savedTripListItems.append(row);
   }
 }
@@ -1654,10 +1688,11 @@ async function removeSavedTrip(snapshot, event) {
 }
 
 async function showSavedTrips() {
-  if (mobilePreview.enabled) return;
   savedTripsShow.disabled = true;
   try {
-    const snapshots = orderedSnapshots(await globalThis.MobileSnapshotStore.list());
+    const snapshots = mobilePreview.enabled
+      ? (currentMobileSnapshot ? [currentMobileSnapshot] : [])
+      : orderedSnapshots(await globalThis.MobileSnapshotStore.list());
     renderSavedTripList(snapshots);
     crossfadeCoverToSavedTripList();
   } catch (_) {
@@ -1844,8 +1879,9 @@ async function initializeMobileHome() {
 
 function prepareMobilePreview() {
   if (mobilePreview.enabled) homeTitle.textContent = 'TOURISTS';
-  savedTripsShow.disabled = true;
-  savedTripsShow.setAttribute('aria-disabled', 'true');
+  savedTripsShow.disabled = false;
+  savedTripsShow.setAttribute('aria-disabled', 'false');
+  savedTripReceiveShow.hidden = true;
   savedTripList.hidden = true;
   pwaDiagnosticsSection.hidden = true;
 }
@@ -1897,7 +1933,7 @@ async function inspectWorker(worker) {
 function diagnosticWorkerLabel(worker, response) {
   if (!worker) return 'なし';
   return response?.shellVersion === PWA_SHELL_VERSION && response?.cacheName === PWA_CACHE_NAME
-    ? 'あり（v82）' : 'あり（v82確認不可）';
+    ? 'あり（v83）' : 'あり（v83確認不可）';
 }
 
 async function showPwaDiagnostics() {
@@ -1954,6 +1990,8 @@ async function registerMobileServiceWorker() {
   }
 }
 
+savedTripsShow.addEventListener('click', () => { void showSavedTrips(); });
+
 if (mobilePreview.enabled) {
   applyMobileFontSize(MOBILE_FONT_SIZE_DEFAULT);
   void loadMobilePreview(mobilePreview.tripId);
@@ -1961,7 +1999,6 @@ if (mobilePreview.enabled) {
   void initializeMobileHome().catch(() => {
     homeMessage.textContent = '保存した旅のしおりを読み込めません。ブラウザのデータ保存設定を確認してください。';
   });
-  savedTripsShow.addEventListener('click', () => { void showSavedTrips(); });
   savedTripReceiveShow.addEventListener('click', () => { void showSavedTripReceiveScanner(); });
   savedTripQrScannerClose.addEventListener('click', closeSavedTripReceiveScanner);
   pwaDiagnosticsShow.addEventListener('click', () => { void showPwaDiagnostics(); });
@@ -1972,3 +2009,4 @@ window.addEventListener('pagehide', () => stopMobileQrScanner());
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') stopMobileQrScanner();
 });
+window.addEventListener('resize', scheduleMobileMemoScrollability);

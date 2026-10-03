@@ -29,23 +29,23 @@ const pwaDiagnosticsShow = document.getElementById('mobile-pwa-diagnostics-show'
 const pwaDiagnosticsResult = document.getElementById('mobile-pwa-diagnostics-result');
 const pwaDiagnosticsSection = document.getElementById('mobile-pwa-diagnostics');
 
-const PWA_SHELL_VERSION = 'v92';
+const PWA_SHELL_VERSION = 'v93';
 const PWA_CACHE_PREFIX = 'travel-shiori-mobile-shell-';
 const PWA_CACHE_NAME = PWA_CACHE_PREFIX + PWA_SHELL_VERSION;
 const PWA_SHELL_ASSETS = [
-  './index.html?pwa=v92',
-  './mobile.js?pwa=v92',
-  './mobile.css?pwa=v92',
-  './mobile-snapshot-store.js?pwa=v92',
-  './mobile-incoming-snapshot.js?pwa=v92',
-  './tourists-public-config.js?pwa=v92',
-  './assets/jsqr-1.4.0.js?pwa=v92',
-  './manifest.webmanifest?pwa=v92',
-  './assets/icon-192.png?pwa=v92',
-  './assets/icon-512.png?pwa=v92',
-  './assets/icon-maskable-512.png?pwa=v92',
-  './assets/mobile-cover.png?pwa=v92',
-  './assets/mobile-clover.svg?pwa=v92',
+  './index.html?pwa=v93',
+  './mobile.js?pwa=v93',
+  './mobile.css?pwa=v93',
+  './mobile-snapshot-store.js?pwa=v93',
+  './mobile-incoming-snapshot.js?pwa=v93',
+  './tourists-public-config.js?pwa=v93',
+  './assets/jsqr-1.4.0.js?pwa=v93',
+  './manifest.webmanifest?pwa=v93',
+  './assets/icon-192.png?pwa=v93',
+  './assets/icon-512.png?pwa=v93',
+  './assets/icon-maskable-512.png?pwa=v93',
+  './assets/mobile-cover.png?pwa=v93',
+  './assets/mobile-clover.svg?pwa=v93',
 ];
 
 let selectedMobileDayKey = null;
@@ -811,7 +811,7 @@ function selectMobileTab(tab, {restoreState = null, sourceAlreadySaved = false} 
 function appendMobileItineraryClover(parent) {
   const clover = document.createElement('img');
   clover.className = 'mobile-itinerary-clover';
-  clover.src = './assets/mobile-clover.svg?pwa=v92';
+  clover.src = './assets/mobile-clover.svg?pwa=v93';
   clover.alt = '';
   clover.setAttribute('aria-hidden', 'true');
   parent.append(clover);
@@ -1045,8 +1045,12 @@ function settleMobileTabSwipe(gesture, commit) {
     } else {
       restoreMobileTabScroll(swipe.sourceTab, swipe.sourceState);
     }
-    swipe.overlay.remove?.();
-    mobileTabSwipeSettling = false;
+    // Keep the final overlay frame above the completed live DOM for one presentation frame.
+    // Removing it on the following frame avoids exposing an intermediate header layout.
+    nextMobileFrame(() => nextMobileFrame(() => {
+      swipe.overlay.remove?.();
+      mobileTabSwipeSettling = false;
+    }));
   }, MOBILE_TAB_SWIPE_SETTLE_MS);
   return true;
 }
@@ -2063,7 +2067,7 @@ async function inspectWorker(worker) {
 function diagnosticWorkerLabel(worker, response) {
   if (!worker) return 'なし';
   return response?.shellVersion === PWA_SHELL_VERSION && response?.cacheName === PWA_CACHE_NAME
-    ? 'あり（v92）' : 'あり（v92確認不可）';
+    ? 'あり（v93）' : 'あり（v93確認不可）';
 }
 
 async function showPwaDiagnostics() {

@@ -29,23 +29,23 @@ const pwaDiagnosticsShow = document.getElementById('mobile-pwa-diagnostics-show'
 const pwaDiagnosticsResult = document.getElementById('mobile-pwa-diagnostics-result');
 const pwaDiagnosticsSection = document.getElementById('mobile-pwa-diagnostics');
 
-const PWA_SHELL_VERSION = 'v90';
+const PWA_SHELL_VERSION = 'v91';
 const PWA_CACHE_PREFIX = 'travel-shiori-mobile-shell-';
 const PWA_CACHE_NAME = PWA_CACHE_PREFIX + PWA_SHELL_VERSION;
 const PWA_SHELL_ASSETS = [
-  './index.html?pwa=v90',
-  './mobile.js?pwa=v90',
-  './mobile.css?pwa=v90',
-  './mobile-snapshot-store.js?pwa=v90',
-  './mobile-incoming-snapshot.js?pwa=v90',
-  './tourists-public-config.js?pwa=v90',
-  './assets/jsqr-1.4.0.js?pwa=v90',
-  './manifest.webmanifest?pwa=v90',
-  './assets/icon-192.png?pwa=v90',
-  './assets/icon-512.png?pwa=v90',
-  './assets/icon-maskable-512.png?pwa=v90',
-  './assets/mobile-cover.png?pwa=v90',
-  './assets/mobile-clover.svg?pwa=v90',
+  './index.html?pwa=v91',
+  './mobile.js?pwa=v91',
+  './mobile.css?pwa=v91',
+  './mobile-snapshot-store.js?pwa=v91',
+  './mobile-incoming-snapshot.js?pwa=v91',
+  './tourists-public-config.js?pwa=v91',
+  './assets/jsqr-1.4.0.js?pwa=v91',
+  './manifest.webmanifest?pwa=v91',
+  './assets/icon-192.png?pwa=v91',
+  './assets/icon-512.png?pwa=v91',
+  './assets/icon-maskable-512.png?pwa=v91',
+  './assets/mobile-cover.png?pwa=v91',
+  './assets/mobile-clover.svg?pwa=v91',
 ];
 
 let selectedMobileDayKey = null;
@@ -811,7 +811,7 @@ function selectMobileTab(tab, {restoreState = null, sourceAlreadySaved = false} 
 function appendMobileItineraryClover(parent) {
   const clover = document.createElement('img');
   clover.className = 'mobile-itinerary-clover';
-  clover.src = './assets/mobile-clover.svg?pwa=v90';
+  clover.src = './assets/mobile-clover.svg?pwa=v91';
   clover.alt = '';
   clover.setAttribute('aria-hidden', 'true');
   parent.append(clover);
@@ -2058,7 +2058,7 @@ async function inspectWorker(worker) {
 function diagnosticWorkerLabel(worker, response) {
   if (!worker) return 'なし';
   return response?.shellVersion === PWA_SHELL_VERSION && response?.cacheName === PWA_CACHE_NAME
-    ? 'あり（v90）' : 'あり（v90確認不可）';
+    ? 'あり（v91）' : 'あり（v91確認不可）';
 }
 
 async function showPwaDiagnostics() {

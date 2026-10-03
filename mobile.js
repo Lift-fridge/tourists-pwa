@@ -29,23 +29,23 @@ const pwaDiagnosticsShow = document.getElementById('mobile-pwa-diagnostics-show'
 const pwaDiagnosticsResult = document.getElementById('mobile-pwa-diagnostics-result');
 const pwaDiagnosticsSection = document.getElementById('mobile-pwa-diagnostics');
 
-const PWA_SHELL_VERSION = 'v89';
+const PWA_SHELL_VERSION = 'v90';
 const PWA_CACHE_PREFIX = 'travel-shiori-mobile-shell-';
 const PWA_CACHE_NAME = PWA_CACHE_PREFIX + PWA_SHELL_VERSION;
 const PWA_SHELL_ASSETS = [
-  './index.html?pwa=v89',
-  './mobile.js?pwa=v89',
-  './mobile.css?pwa=v89',
-  './mobile-snapshot-store.js?pwa=v89',
-  './mobile-incoming-snapshot.js?pwa=v89',
-  './tourists-public-config.js?pwa=v89',
-  './assets/jsqr-1.4.0.js?pwa=v89',
-  './manifest.webmanifest?pwa=v89',
-  './assets/icon-192.png?pwa=v89',
-  './assets/icon-512.png?pwa=v89',
-  './assets/icon-maskable-512.png?pwa=v89',
-  './assets/mobile-cover.png?pwa=v89',
-  './assets/mobile-clover.svg?pwa=v89',
+  './index.html?pwa=v90',
+  './mobile.js?pwa=v90',
+  './mobile.css?pwa=v90',
+  './mobile-snapshot-store.js?pwa=v90',
+  './mobile-incoming-snapshot.js?pwa=v90',
+  './tourists-public-config.js?pwa=v90',
+  './assets/jsqr-1.4.0.js?pwa=v90',
+  './manifest.webmanifest?pwa=v90',
+  './assets/icon-192.png?pwa=v90',
+  './assets/icon-512.png?pwa=v90',
+  './assets/icon-maskable-512.png?pwa=v90',
+  './assets/mobile-cover.png?pwa=v90',
+  './assets/mobile-clover.svg?pwa=v90',
 ];
 
 let selectedMobileDayKey = null;
@@ -811,7 +811,7 @@ function selectMobileTab(tab, {restoreState = null, sourceAlreadySaved = false} 
 function appendMobileItineraryClover(parent) {
   const clover = document.createElement('img');
   clover.className = 'mobile-itinerary-clover';
-  clover.src = './assets/mobile-clover.svg?pwa=v89';
+  clover.src = './assets/mobile-clover.svg?pwa=v90';
   clover.alt = '';
   clover.setAttribute('aria-hidden', 'true');
   parent.append(clover);
@@ -866,8 +866,12 @@ function selectMobileItineraryDay(snapshot, dayKey) {
   mobileTabScrollPositions.itinerary.delete(dayKey);
   mobileTabScrollPositions.info.delete(dayKey);
   renderMobileItinerary(snapshot);
+  // 日付セクション自身のscroll-margin-topでsticky headerの下へ見出しを着地させる。
   // previewは選択日のDOMだけを差し替えるため、iframe外まで届き得るscrollIntoViewは不要。
-  if (!mobilePreview.enabled) mobileItineraryDays.scrollIntoView?.({behavior: 'auto', block: 'start'});
+  if (!mobilePreview.enabled) {
+    const selectedDay = mobileItineraryDays.firstElementChild || mobileItineraryDays.children?.[0];
+    (selectedDay || mobileItineraryDays).scrollIntoView?.({behavior: 'auto', block: 'start'});
+  }
 }
 
 function mobileItineraryScrollState() {
@@ -2054,7 +2058,7 @@ async function inspectWorker(worker) {
 function diagnosticWorkerLabel(worker, response) {
   if (!worker) return 'なし';
   return response?.shellVersion === PWA_SHELL_VERSION && response?.cacheName === PWA_CACHE_NAME
-    ? 'あり（v89）' : 'あり（v89確認不可）';
+    ? 'あり（v90）' : 'あり（v90確認不可）';
 }
 
 async function showPwaDiagnostics() {

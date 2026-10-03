@@ -29,23 +29,23 @@ const pwaDiagnosticsShow = document.getElementById('mobile-pwa-diagnostics-show'
 const pwaDiagnosticsResult = document.getElementById('mobile-pwa-diagnostics-result');
 const pwaDiagnosticsSection = document.getElementById('mobile-pwa-diagnostics');
 
-const PWA_SHELL_VERSION = 'v85';
+const PWA_SHELL_VERSION = 'v86';
 const PWA_CACHE_PREFIX = 'travel-shiori-mobile-shell-';
 const PWA_CACHE_NAME = PWA_CACHE_PREFIX + PWA_SHELL_VERSION;
 const PWA_SHELL_ASSETS = [
-  './index.html?pwa=v85',
-  './mobile.js?pwa=v85',
-  './mobile.css?pwa=v85',
-  './mobile-snapshot-store.js?pwa=v85',
-  './mobile-incoming-snapshot.js?pwa=v85',
-  './tourists-public-config.js?pwa=v85',
-  './assets/jsqr-1.4.0.js?pwa=v85',
-  './manifest.webmanifest?pwa=v85',
-  './assets/icon-192.png?pwa=v85',
-  './assets/icon-512.png?pwa=v85',
-  './assets/icon-maskable-512.png?pwa=v85',
-  './assets/mobile-cover.png?pwa=v85',
-  './assets/mobile-clover.svg?pwa=v85',
+  './index.html?pwa=v86',
+  './mobile.js?pwa=v86',
+  './mobile.css?pwa=v86',
+  './mobile-snapshot-store.js?pwa=v86',
+  './mobile-incoming-snapshot.js?pwa=v86',
+  './tourists-public-config.js?pwa=v86',
+  './assets/jsqr-1.4.0.js?pwa=v86',
+  './manifest.webmanifest?pwa=v86',
+  './assets/icon-192.png?pwa=v86',
+  './assets/icon-512.png?pwa=v86',
+  './assets/icon-maskable-512.png?pwa=v86',
+  './assets/mobile-cover.png?pwa=v86',
+  './assets/mobile-clover.svg?pwa=v86',
 ];
 
 let selectedMobileDayKey = null;
@@ -801,7 +801,7 @@ function selectMobileTab(tab, {restoreState = null, sourceAlreadySaved = false} 
 function appendMobileItineraryClover(parent) {
   const clover = document.createElement('img');
   clover.className = 'mobile-itinerary-clover';
-  clover.src = './assets/mobile-clover.svg?pwa=v85';
+  clover.src = './assets/mobile-clover.svg?pwa=v86';
   clover.alt = '';
   clover.setAttribute('aria-hidden', 'true');
   parent.append(clover);
@@ -862,33 +862,22 @@ function selectMobileItineraryDay(snapshot, dayKey) {
 
 function mobileItineraryScrollState() {
   const root = document.scrollingElement || document.documentElement || document.body;
-  const top = Math.max(
-    typeof root?.scrollTop === 'number' ? root.scrollTop : 0,
-    typeof window.scrollY === 'number' ? window.scrollY : 0,
-  );
-  const viewport = typeof root?.clientHeight === 'number' && root.clientHeight > 0
+  const rootTop = typeof root?.scrollTop === 'number' ? root.scrollTop : 0;
+  const windowTop = typeof window.scrollY === 'number' ? window.scrollY : 0;
+  const clientHeight = typeof root?.clientHeight === 'number' && root.clientHeight > 0
     ? root.clientHeight : (window.innerHeight || 0);
-  const height = typeof root?.scrollHeight === 'number' ? root.scrollHeight : viewport;
-  return {top, maxTop: Math.max(0, height - viewport)};
-}
-
-function mobileSelectedItineraryDayFitsViewport() {
-  const day = mobileItineraryDays.firstElementChild || mobileItineraryDays.children?.[0];
-  const rect = day?.getBoundingClientRect?.();
-  const viewport = window.innerHeight || document.scrollingElement?.clientHeight || 0;
-  const navBottom = mobileItineraryDateNav.getBoundingClientRect?.().bottom;
-  const available = viewport - (typeof navBottom === 'number'
-    ? Math.max(0, Math.min(navBottom, viewport)) : 0);
-  return Boolean(rect && typeof rect.height === 'number' && rect.height <= available + 1);
+  const scrollHeight = Math.max(clientHeight,
+    typeof root?.scrollHeight === 'number' ? root.scrollHeight : clientHeight);
+  const maxTop = Math.max(0, scrollHeight - clientHeight);
+  const top = Math.min(maxTop, Math.max(0, rootTop || windowTop));
+  return {root, top, clientHeight, scrollHeight, maxTop};
 }
 
 function mobileItineraryDayEdgeState() {
-  const {top, maxTop} = mobileItineraryScrollState();
-  const shortDay = mobileSelectedItineraryDayFitsViewport();
+  const {top, clientHeight, scrollHeight} = mobileItineraryScrollState();
   return {
-    shortDay,
-    atTop: shortDay || top <= 1,
-    atBottom: shortDay || top >= maxTop - 1,
+    atTop: top <= 1,
+    atBottom: top + clientHeight >= scrollHeight - 1,
   };
 }
 
@@ -2037,7 +2026,7 @@ async function inspectWorker(worker) {
 function diagnosticWorkerLabel(worker, response) {
   if (!worker) return 'なし';
   return response?.shellVersion === PWA_SHELL_VERSION && response?.cacheName === PWA_CACHE_NAME
-    ? 'あり（v85）' : 'あり（v85確認不可）';
+    ? 'あり（v86）' : 'あり（v86確認不可）';
 }
 
 async function showPwaDiagnostics() {

@@ -29,23 +29,23 @@ const pwaDiagnosticsShow = document.getElementById('mobile-pwa-diagnostics-show'
 const pwaDiagnosticsResult = document.getElementById('mobile-pwa-diagnostics-result');
 const pwaDiagnosticsSection = document.getElementById('mobile-pwa-diagnostics');
 
-const PWA_SHELL_VERSION = 'v99';
+const PWA_SHELL_VERSION = 'v100';
 const PWA_CACHE_PREFIX = 'travel-shiori-mobile-shell-';
 const PWA_CACHE_NAME = PWA_CACHE_PREFIX + PWA_SHELL_VERSION;
 const PWA_SHELL_ASSETS = [
-  './index.html?pwa=v99',
-  './mobile.js?pwa=v99',
-  './mobile.css?pwa=v99',
-  './mobile-snapshot-store.js?pwa=v99',
-  './mobile-incoming-snapshot.js?pwa=v99',
-  './tourists-public-config.js?pwa=v99',
-  './assets/jsqr-1.4.0.js?pwa=v99',
-  './manifest.webmanifest?pwa=v99',
-  './assets/icon-192.png?pwa=v99',
-  './assets/icon-512.png?pwa=v99',
-  './assets/icon-maskable-512.png?pwa=v99',
-  './assets/mobile-cover.png?pwa=v99',
-  './assets/mobile-clover.svg?pwa=v99',
+  './index.html?pwa=v100',
+  './mobile.js?pwa=v100',
+  './mobile.css?pwa=v100',
+  './mobile-snapshot-store.js?pwa=v100',
+  './mobile-incoming-snapshot.js?pwa=v100',
+  './tourists-public-config.js?pwa=v100',
+  './assets/jsqr-1.4.0.js?pwa=v100',
+  './manifest.webmanifest?pwa=v100',
+  './assets/icon-192.png?pwa=v100',
+  './assets/icon-512.png?pwa=v100',
+  './assets/icon-maskable-512.png?pwa=v100',
+  './assets/mobile-cover.png?pwa=v100',
+  './assets/mobile-clover.svg?pwa=v100',
 ];
 
 let selectedMobileDayKey = null;
@@ -730,6 +730,8 @@ function renderMobileInfoDay(snapshot, day, selectedDayIndex, days) {
   const heading = document.createElement('h2');
   heading.textContent = mobileItineraryDayHeading(day, selectedDayIndex, days.length);
   daySection.append(heading);
+  appendMobileText(daySection, 'p', 'mobile-itinerary-day-holiday', day.holiday_name);
+  appendMobileText(daySection, 'p', 'mobile-itinerary-day-summary', day.summary);
 
   day.items
     .filter((item) => item && typeof item === 'object' && item.placement === 'day')
@@ -811,13 +813,16 @@ function selectMobileTab(tab, {restoreState = null, sourceAlreadySaved = false} 
 function appendMobileItineraryClover(parent) {
   const clover = document.createElement('img');
   clover.className = 'mobile-itinerary-clover';
-  clover.src = './assets/mobile-clover.svg?pwa=v99';
+  clover.src = './assets/mobile-clover.svg?pwa=v100';
   clover.alt = '';
   clover.setAttribute('aria-hidden', 'true');
   parent.append(clover);
 }
 
 function mobileItineraryWeekdayClass(day) {
+  if (typeof day?.holiday_name === 'string' && day.holiday_name.trim()) {
+    return ' mobile-itinerary-date-button-sunday';
+  }
   const value = new Date(day.date + 'T00:00:00Z');
   if (Number.isNaN(value.getTime())) return '';
   const weekday = value.getUTCDay();
@@ -1420,6 +1425,7 @@ function renderMobileItineraryDay(snapshot, day, selectedDayIndex, days) {
   const heading = document.createElement('h2');
   heading.textContent = mobileItineraryDayHeading(day, selectedDayIndex, days.length);
   daySection.append(heading);
+  appendMobileText(daySection, 'p', 'mobile-itinerary-day-holiday', day.holiday_name);
   appendMobileText(daySection, 'p', 'mobile-itinerary-day-summary', day.summary);
   day.items
     .filter((item) => item && typeof item === 'object' && item.placement === 'day')
@@ -2063,7 +2069,7 @@ async function inspectWorker(worker) {
 function diagnosticWorkerLabel(worker, response) {
   if (!worker) return 'なし';
   return response?.shellVersion === PWA_SHELL_VERSION && response?.cacheName === PWA_CACHE_NAME
-    ? 'あり（v99）' : 'あり（v99確認不可）';
+    ? 'あり（v100）' : 'あり（v100確認不可）';
 }
 
 async function showPwaDiagnostics() {

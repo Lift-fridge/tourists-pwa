@@ -29,23 +29,23 @@ const pwaDiagnosticsShow = document.getElementById('mobile-pwa-diagnostics-show'
 const pwaDiagnosticsResult = document.getElementById('mobile-pwa-diagnostics-result');
 const pwaDiagnosticsSection = document.getElementById('mobile-pwa-diagnostics');
 
-const PWA_SHELL_VERSION = 'v93';
+const PWA_SHELL_VERSION = 'v94';
 const PWA_CACHE_PREFIX = 'travel-shiori-mobile-shell-';
 const PWA_CACHE_NAME = PWA_CACHE_PREFIX + PWA_SHELL_VERSION;
 const PWA_SHELL_ASSETS = [
-  './index.html?pwa=v93',
-  './mobile.js?pwa=v93',
-  './mobile.css?pwa=v93',
-  './mobile-snapshot-store.js?pwa=v93',
-  './mobile-incoming-snapshot.js?pwa=v93',
-  './tourists-public-config.js?pwa=v93',
-  './assets/jsqr-1.4.0.js?pwa=v93',
-  './manifest.webmanifest?pwa=v93',
-  './assets/icon-192.png?pwa=v93',
-  './assets/icon-512.png?pwa=v93',
-  './assets/icon-maskable-512.png?pwa=v93',
-  './assets/mobile-cover.png?pwa=v93',
-  './assets/mobile-clover.svg?pwa=v93',
+  './index.html?pwa=v94',
+  './mobile.js?pwa=v94',
+  './mobile.css?pwa=v94',
+  './mobile-snapshot-store.js?pwa=v94',
+  './mobile-incoming-snapshot.js?pwa=v94',
+  './tourists-public-config.js?pwa=v94',
+  './assets/jsqr-1.4.0.js?pwa=v94',
+  './manifest.webmanifest?pwa=v94',
+  './assets/icon-192.png?pwa=v94',
+  './assets/icon-512.png?pwa=v94',
+  './assets/icon-maskable-512.png?pwa=v94',
+  './assets/mobile-cover.png?pwa=v94',
+  './assets/mobile-clover.svg?pwa=v94',
 ];
 
 let selectedMobileDayKey = null;
@@ -56,7 +56,12 @@ let selectedMobileMemoPageKey = null;
 const MOBILE_COVER_SWIPE_THRESHOLD_RATIO = 0.10;
 const MOBILE_COVER_DIRECTION_LOCK_PX = 8;
 const MOBILE_COVER_SETTLE_MS = 180;
+const MOBILE_COVER_DOUBLE_TAP_WINDOW_MS = 320;
+const MOBILE_COVER_DOUBLE_TAP_DISTANCE_PX = 24;
 let mobileCoverPointer = null;
+let mobileCoverLastTap = null;
+let mobileCoverTouchStart = null;
+let mobileCoverMultiTouch = false;
 let mobileCoverSettleTimer = null;
 let mobileCoverLeaving = false;
 let savedTripCrossfadeTimer = null;
@@ -811,7 +816,7 @@ function selectMobileTab(tab, {restoreState = null, sourceAlreadySaved = false} 
 function appendMobileItineraryClover(parent) {
   const clover = document.createElement('img');
   clover.className = 'mobile-itinerary-clover';
-  clover.src = './assets/mobile-clover.svg?pwa=v93';
+  clover.src = './assets/mobile-clover.svg?pwa=v94';
   clover.alt = '';
   clover.setAttribute('aria-hidden', 'true');
   parent.append(clover);
@@ -1045,12 +1050,8 @@ function settleMobileTabSwipe(gesture, commit) {
     } else {
       restoreMobileTabScroll(swipe.sourceTab, swipe.sourceState);
     }
-    // Keep the final overlay frame above the completed live DOM for one presentation frame.
-    // Removing it on the following frame avoids exposing an intermediate header layout.
-    nextMobileFrame(() => nextMobileFrame(() => {
-      swipe.overlay.remove?.();
-      mobileTabSwipeSettling = false;
-    }));
+    swipe.overlay.remove?.();
+    mobileTabSwipeSettling = false;
   }, MOBILE_TAB_SWIPE_SETTLE_MS);
   return true;
 }
@@ -1610,11 +1611,70 @@ function finishMobileCoverSwipe(event, cancelled = false) {
   }
 }
 
+function resetMobileCoverDoubleTapFallback() {
+  mobileCoverLastTap = null;
+  mobileCoverTouchStart = null;
+  mobileCoverMultiTouch = false;
+}
+
+function trackMobileCoverTouchStart(event) {
+  if (event.touches?.length !== 1) {
+    mobileCoverMultiTouch = true;
+    mobileCoverLastTap = null;
+    mobileCoverTouchStart = null;
+    return;
+  }
+  const touch = event.touches[0];
+  mobileCoverTouchStart = {x: touch.clientX, y: touch.clientY, moved: false};
+}
+
+function trackMobileCoverTouchMove(event) {
+  if (event.touches?.length !== 1) {
+    mobileCoverMultiTouch = true;
+    return;
+  }
+  const touch = event.touches[0];
+  const start = mobileCoverTouchStart;
+  if (start && Math.hypot(touch.clientX - start.x, touch.clientY - start.y) >= MOBILE_COVER_DIRECTION_LOCK_PX) {
+    start.moved = true;
+  }
+}
+
+function suppressMobileCoverLegacyDoubleTapZoom(event) {
+  if (event.touches?.length > 0) return;
+  const touch = event.changedTouches?.[0];
+  const start = mobileCoverTouchStart;
+  if (mobileCoverMultiTouch || start?.moved || event.target?.closest?.('.mobile-cover-brand') || !touch) {
+    resetMobileCoverDoubleTapFallback();
+    return;
+  }
+  const now = Date.now();
+  const previous = mobileCoverLastTap;
+  const dx = previous ? touch.clientX - previous.x : 0;
+  const dy = previous ? touch.clientY - previous.y : 0;
+  const isDoubleTap = previous
+    && now - previous.at <= MOBILE_COVER_DOUBLE_TAP_WINDOW_MS
+    && Math.hypot(dx, dy) <= MOBILE_COVER_DOUBLE_TAP_DISTANCE_PX;
+  mobileCoverTouchStart = null;
+  mobileCoverLastTap = null;
+  if (isDoubleTap) {
+    // Older iOS WebKit ignores touch-action: manipulation for double-tap smart zoom.
+    // This is limited to a second single-finger tap on the non-interactive cover surface.
+    event.preventDefault?.();
+    return;
+  }
+  mobileCoverLastTap = {at: now, x: touch.clientX, y: touch.clientY};
+}
+
 function installMobileCoverSwipe() {
   mobileCover.addEventListener('pointerdown', startMobileCoverSwipe);
   mobileCover.addEventListener('pointermove', moveMobileCoverSwipe);
   mobileCover.addEventListener('pointerup', finishMobileCoverSwipe);
   mobileCover.addEventListener('pointercancel', (event) => finishMobileCoverSwipe(event, true));
+  mobileCover.addEventListener('touchstart', trackMobileCoverTouchStart, {passive: true});
+  mobileCover.addEventListener('touchmove', trackMobileCoverTouchMove, {passive: true});
+  mobileCover.addEventListener('touchend', suppressMobileCoverLegacyDoubleTapZoom, {passive: false});
+  mobileCover.addEventListener('touchcancel', resetMobileCoverDoubleTapFallback, {passive: true});
 }
 
 function toggleMobileElementClass(element, className, enabled) {
@@ -1655,6 +1715,7 @@ function showMobileCover(snapshot, {preservePreviewShiftLatch = false} = {}) {
   clearMobileCoverSettleTimer();
   clearSavedTripCrossfade();
   mobileCoverPointer = null;
+  resetMobileCoverDoubleTapFallback();
   mobileItineraryDaySwipe = null;
   if (!preservePreviewShiftLatch) resetMobilePreviewShiftLatch();
   mobileCoverLeaving = false;
@@ -1672,6 +1733,7 @@ function showMobileCover(snapshot, {preservePreviewShiftLatch = false} = {}) {
 function hideMobileCover() {
   clearMobileCoverSettleTimer();
   mobileCoverPointer = null;
+  resetMobileCoverDoubleTapFallback();
   mobileCoverLeaving = false;
   mobileCover.style.transform = '';
   mobileCover.style.transition = '';
@@ -2067,7 +2129,7 @@ async function inspectWorker(worker) {
 function diagnosticWorkerLabel(worker, response) {
   if (!worker) return 'なし';
   return response?.shellVersion === PWA_SHELL_VERSION && response?.cacheName === PWA_CACHE_NAME
-    ? 'あり（v93）' : 'あり（v93確認不可）';
+    ? 'あり（v94）' : 'あり（v94確認不可）';
 }
 
 async function showPwaDiagnostics() {

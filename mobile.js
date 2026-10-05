@@ -29,23 +29,23 @@ const pwaDiagnosticsShow = document.getElementById('mobile-pwa-diagnostics-show'
 const pwaDiagnosticsResult = document.getElementById('mobile-pwa-diagnostics-result');
 const pwaDiagnosticsSection = document.getElementById('mobile-pwa-diagnostics');
 
-const PWA_SHELL_VERSION = 'v102';
+const PWA_SHELL_VERSION = 'v103';
 const PWA_CACHE_PREFIX = 'travel-shiori-mobile-shell-';
 const PWA_CACHE_NAME = PWA_CACHE_PREFIX + PWA_SHELL_VERSION;
 const PWA_SHELL_ASSETS = [
-  './index.html?pwa=v102',
-  './mobile.js?pwa=v102',
-  './mobile.css?pwa=v102',
-  './mobile-snapshot-store.js?pwa=v102',
-  './mobile-incoming-snapshot.js?pwa=v102',
-  './tourists-public-config.js?pwa=v102',
-  './assets/jsqr-1.4.0.js?pwa=v102',
-  './manifest.webmanifest?pwa=v102',
-  './assets/icon-192.png?pwa=v102',
-  './assets/icon-512.png?pwa=v102',
-  './assets/icon-maskable-512.png?pwa=v102',
-  './assets/mobile-cover.png?pwa=v102',
-  './assets/mobile-clover.svg?pwa=v102',
+  './index.html?pwa=v103',
+  './mobile.js?pwa=v103',
+  './mobile.css?pwa=v103',
+  './mobile-snapshot-store.js?pwa=v103',
+  './mobile-incoming-snapshot.js?pwa=v103',
+  './tourists-public-config.js?pwa=v103',
+  './assets/jsqr-1.4.0.js?pwa=v103',
+  './manifest.webmanifest?pwa=v103',
+  './assets/icon-192.png?pwa=v103',
+  './assets/icon-512.png?pwa=v103',
+  './assets/icon-maskable-512.png?pwa=v103',
+  './assets/mobile-cover.png?pwa=v103',
+  './assets/mobile-clover.svg?pwa=v103',
 ];
 
 let selectedMobileDayKey = null;
@@ -821,7 +821,7 @@ function selectMobileTab(tab, {restoreState = null, sourceAlreadySaved = false} 
 function appendMobileItineraryClover(parent) {
   const clover = document.createElement('img');
   clover.className = 'mobile-itinerary-clover';
-  clover.src = './assets/mobile-clover.svg?pwa=v102';
+  clover.src = './assets/mobile-clover.svg?pwa=v103';
   clover.alt = '';
   clover.setAttribute('aria-hidden', 'true');
   parent.append(clover);
@@ -2077,7 +2077,7 @@ async function inspectWorker(worker) {
 function diagnosticWorkerLabel(worker, response) {
   if (!worker) return 'なし';
   return response?.shellVersion === PWA_SHELL_VERSION && response?.cacheName === PWA_CACHE_NAME
-    ? 'あり（v102）' : 'あり（v102確認不可）';
+    ? 'あり（v103）' : 'あり（v103確認不可）';
 }
 
 async function showPwaDiagnostics() {

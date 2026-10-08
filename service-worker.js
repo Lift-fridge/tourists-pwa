@@ -10,6 +10,8 @@ const SHELL_PATHS = [
   'mobile.js',
   'mobile.css',
   'mobile-snapshot-store.js',
+  'mobile-share-request-ticket-store.js',
+  'mobile-share-qr-code.js',
   'mobile-incoming-snapshot.js',
   'tourists-public-config.js',
   'assets/jsqr-1.4.0.js',

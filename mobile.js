@@ -40,25 +40,25 @@ const pwaDiagnosticsShow = document.getElementById('mobile-pwa-diagnostics-show'
 const pwaDiagnosticsResult = document.getElementById('mobile-pwa-diagnostics-result');
 const pwaDiagnosticsSection = document.getElementById('mobile-pwa-diagnostics');
 
-const PWA_SHELL_VERSION = 'v103';
+const PWA_SHELL_VERSION = 'v104';
 const PWA_CACHE_PREFIX = 'travel-shiori-mobile-shell-';
 const PWA_CACHE_NAME = PWA_CACHE_PREFIX + PWA_SHELL_VERSION;
 const PWA_SHELL_ASSETS = [
-  './index.html?pwa=v103',
-  './mobile.js?pwa=v103',
-  './mobile.css?pwa=v103',
-  './mobile-snapshot-store.js?pwa=v103',
-  './mobile-share-request-ticket-store.js?pwa=v103',
-  './mobile-share-qr-code.js?pwa=v103',
-  './mobile-incoming-snapshot.js?pwa=v103',
-  './tourists-public-config.js?pwa=v103',
-  './assets/jsqr-1.4.0.js?pwa=v103',
-  './manifest.webmanifest?pwa=v103',
-  './assets/icon-192.png?pwa=v103',
-  './assets/icon-512.png?pwa=v103',
-  './assets/icon-maskable-512.png?pwa=v103',
-  './assets/mobile-cover.png?pwa=v103',
-  './assets/mobile-clover.svg?pwa=v103',
+  './index.html?pwa=v104',
+  './mobile.js?pwa=v104',
+  './mobile.css?pwa=v104',
+  './mobile-snapshot-store.js?pwa=v104',
+  './mobile-share-request-ticket-store.js?pwa=v104',
+  './mobile-share-qr-code.js?pwa=v104',
+  './mobile-incoming-snapshot.js?pwa=v104',
+  './tourists-public-config.js?pwa=v104',
+  './assets/jsqr-1.4.0.js?pwa=v104',
+  './manifest.webmanifest?pwa=v104',
+  './assets/icon-192.png?pwa=v104',
+  './assets/icon-512.png?pwa=v104',
+  './assets/icon-maskable-512.png?pwa=v104',
+  './assets/mobile-cover.png?pwa=v104',
+  './assets/mobile-clover.svg?pwa=v104',
 ];
 
 let selectedMobileDayKey = null;
@@ -836,7 +836,7 @@ function selectMobileTab(tab, {restoreState = null, sourceAlreadySaved = false} 
 function appendMobileItineraryClover(parent) {
   const clover = document.createElement('img');
   clover.className = 'mobile-itinerary-clover';
-  clover.src = './assets/mobile-clover.svg?pwa=v103';
+  clover.src = './assets/mobile-clover.svg?pwa=v104';
   clover.alt = '';
   clover.setAttribute('aria-hidden', 'true');
   parent.append(clover);
@@ -2306,7 +2306,7 @@ async function inspectWorker(worker) {
 function diagnosticWorkerLabel(worker, response) {
   if (!worker) return 'なし';
   return response?.shellVersion === PWA_SHELL_VERSION && response?.cacheName === PWA_CACHE_NAME
-    ? 'あり（v103）' : 'あり（v103確認不可）';
+    ? 'あり（v104）' : 'あり（v104確認不可）';
 }
 
 async function showPwaDiagnostics() {

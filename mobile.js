@@ -40,25 +40,25 @@ const pwaDiagnosticsShow = document.getElementById('mobile-pwa-diagnostics-show'
 const pwaDiagnosticsResult = document.getElementById('mobile-pwa-diagnostics-result');
 const pwaDiagnosticsSection = document.getElementById('mobile-pwa-diagnostics');
 
-const PWA_SHELL_VERSION = 'v106';
+const PWA_SHELL_VERSION = 'v107';
 const PWA_CACHE_PREFIX = 'travel-shiori-mobile-shell-';
 const PWA_CACHE_NAME = PWA_CACHE_PREFIX + PWA_SHELL_VERSION;
 const PWA_SHELL_ASSETS = [
-  './index.html?pwa=v106',
-  './mobile.js?pwa=v106',
-  './mobile.css?pwa=v106',
-  './mobile-snapshot-store.js?pwa=v106',
-  './mobile-share-request-ticket-store.js?pwa=v106',
-  './mobile-share-qr-code.js?pwa=v106',
-  './mobile-incoming-snapshot.js?pwa=v106',
-  './tourists-public-config.js?pwa=v106',
-  './assets/jsqr-1.4.0.js?pwa=v106',
-  './manifest.webmanifest?pwa=v106',
-  './assets/icon-192.png?pwa=v106',
-  './assets/icon-512.png?pwa=v106',
-  './assets/icon-maskable-512.png?pwa=v106',
-  './assets/mobile-cover.png?pwa=v106',
-  './assets/mobile-clover.svg?pwa=v106',
+  './index.html?pwa=v107',
+  './mobile.js?pwa=v107',
+  './mobile.css?pwa=v107',
+  './mobile-snapshot-store.js?pwa=v107',
+  './mobile-share-request-ticket-store.js?pwa=v107',
+  './mobile-share-qr-code.js?pwa=v107',
+  './mobile-incoming-snapshot.js?pwa=v107',
+  './tourists-public-config.js?pwa=v107',
+  './assets/jsqr-1.4.0.js?pwa=v107',
+  './manifest.webmanifest?pwa=v107',
+  './assets/icon-192.png?pwa=v107',
+  './assets/icon-512.png?pwa=v107',
+  './assets/icon-maskable-512.png?pwa=v107',
+  './assets/mobile-cover.png?pwa=v107',
+  './assets/mobile-clover.svg?pwa=v107',
 ];
 
 let selectedMobileDayKey = null;
@@ -179,6 +179,26 @@ function mobileDateRange(snapshot) {
     year: 'numeric', month: 'long', day: 'numeric', weekday: 'short', timeZone: 'UTC',
   }).format(value);
   return format(start) + '〜' + format(end);
+}
+
+function mobileShareExpiryDate(snapshot) {
+  if (snapshot?.schema_version !== 3) return null;
+  const departure = mobileDepartureDate(snapshot);
+  const returnDate = snapshot?.trip?.return_date;
+  if (!departure || typeof returnDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(returnDate)) return null;
+  const start = new Date(departure + 'T00:00:00Z');
+  const end = new Date(returnDate + 'T00:00:00Z');
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())
+      || end.toISOString().slice(0, 10) !== returnDate || end < start
+      || (end - start) / 86400000 > 365) return null;
+  end.setUTCDate(end.getUTCDate() + 7);
+  return end.toISOString().slice(0, 10);
+}
+
+function mobileSnapshotShareIsAvailable(snapshot) {
+  const expiry = mobileShareExpiryDate(snapshot);
+  const today = mobileLocalDateKey();
+  return Boolean(expiry && today && today <= expiry);
 }
 
 function mobileCoverDestinationText(snapshot) {
@@ -836,7 +856,7 @@ function selectMobileTab(tab, {restoreState = null, sourceAlreadySaved = false} 
 function appendMobileItineraryClover(parent) {
   const clover = document.createElement('img');
   clover.className = 'mobile-itinerary-clover';
-  clover.src = './assets/mobile-clover.svg?pwa=v106';
+  clover.src = './assets/mobile-clover.svg?pwa=v107';
   clover.alt = '';
   clover.setAttribute('aria-hidden', 'true');
   parent.append(clover);
@@ -1816,7 +1836,8 @@ async function renderSavedTripList(snapshots) {
     });
 
     row.append(item);
-    if (!mobilePreview.enabled && globalThis.MobileShareRequestTicketStore) {
+    if (!mobilePreview.enabled && mobileSnapshotShareIsAvailable(snapshot)
+        && globalThis.MobileShareRequestTicketStore) {
       try {
         const ticket = await globalThis.MobileShareRequestTicketStore.load(
           globalThis.MobileSnapshotStore.tripKey(snapshot),
@@ -1895,6 +1916,10 @@ async function postMobileShareRequest(body) {
 }
 
 async function openMobileShareDialog(snapshot) {
+  if (!mobileSnapshotShareIsAvailable(snapshot)) {
+    clearMobileShareDialog();
+    return;
+  }
   const key = globalThis.MobileSnapshotStore.tripKey(snapshot);
   if (!key || !globalThis.MobileShareRequestTicketStore) return;
   clearMobileShareDialog();
@@ -2342,7 +2367,7 @@ async function inspectWorker(worker) {
 function diagnosticWorkerLabel(worker, response) {
   if (!worker) return 'なし';
   return response?.shellVersion === PWA_SHELL_VERSION && response?.cacheName === PWA_CACHE_NAME
-    ? 'あり（v106）' : 'あり（v106確認不可）';
+    ? 'あり（v107）' : 'あり（v107確認不可）';
 }
 
 async function showPwaDiagnostics() {

@@ -1863,7 +1863,7 @@ async function renderSavedTripList(snapshots) {
           actions.append(share);
         }
       } catch (_) {
-        // Ticket store failure keeps legacy/view/delete behavior and hides share.
+        // Ticket store failure keeps a ticket-less v3 saved trip viewable and deletable, and hides share.
       }
     }
     if (!mobilePreview.enabled) {

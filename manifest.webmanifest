@@ -1,26 +1,26 @@
 {
   "name": "旅のしおり",
   "short_name": "旅のしおり",
-  "start_url": "./?pwa=v110",
+  "start_url": "./?pwa=v111",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f6f6f4",
   "theme_color": "#2a2925",
   "icons": [
     {
-      "src": "./assets/icon-192.png?pwa=v110",
+      "src": "./assets/icon-192.png?pwa=v111",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./assets/icon-512.png?pwa=v110",
+      "src": "./assets/icon-512.png?pwa=v111",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./assets/icon-maskable-512.png?pwa=v110",
+      "src": "./assets/icon-maskable-512.png?pwa=v111",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

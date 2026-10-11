@@ -41,26 +41,26 @@ const pwaDiagnosticsResult = document.getElementById('mobile-pwa-diagnostics-res
 const pwaDiagnosticsSection = document.getElementById('mobile-pwa-diagnostics');
 const mobileStagingBuild = document.getElementById('mobile-staging-build');
 
-const PWA_SHELL_VERSION = 'v116';
+const PWA_SHELL_VERSION = 'v117';
 const PWA_CACHE_PREFIX = 'travel-shiori-mobile-shell-';
 const PWA_CACHE_NAME = PWA_CACHE_PREFIX + PWA_SHELL_VERSION;
 const PWA_SHELL_ASSETS = [
-  './index.html?pwa=v116',
-  './mobile.js?pwa=v116',
-  './mobile.css?pwa=v116',
-  './mobile-snapshot-store.js?pwa=v116',
-  './mobile-share-request-ticket-store.js?pwa=v116',
-  './mobile-share-qr-code.js?pwa=v116',
-  './mobile-incoming-snapshot.js?pwa=v116',
-  './tourists-public-config.js?pwa=v116',
-  './assets/jsqr-1.4.0.js?pwa=v116',
-  './manifest.webmanifest?pwa=v116',
-  './assets/icon-192.png?pwa=v116',
-  './assets/icon-512.png?pwa=v116',
-  './assets/icon-maskable-512.png?pwa=v116',
-  './assets/mobile-cover.png?pwa=v116',
-  './assets/mobile-memo-list-background.png?pwa=v116',
-  './assets/mobile-clover.svg?pwa=v116',
+  './index.html?pwa=v117',
+  './mobile.js?pwa=v117',
+  './mobile.css?pwa=v117',
+  './mobile-snapshot-store.js?pwa=v117',
+  './mobile-share-request-ticket-store.js?pwa=v117',
+  './mobile-share-qr-code.js?pwa=v117',
+  './mobile-incoming-snapshot.js?pwa=v117',
+  './tourists-public-config.js?pwa=v117',
+  './assets/jsqr-1.4.0.js?pwa=v117',
+  './manifest.webmanifest?pwa=v117',
+  './assets/icon-192.png?pwa=v117',
+  './assets/icon-512.png?pwa=v117',
+  './assets/icon-maskable-512.png?pwa=v117',
+  './assets/mobile-cover.png?pwa=v117',
+  './assets/mobile-memo-list-background.png?pwa=v117',
+  './assets/mobile-clover.svg?pwa=v117',
 ];
 
 let selectedMobileDayKey = null;
@@ -473,7 +473,8 @@ function appendMobileItineraryOptions(parent, item) {
 function mobileTravelCandidates(snapshot) {
   if (!Array.isArray(snapshot?.candidates)) return [];
   return snapshot.candidates.filter((candidate) => candidate && typeof candidate === 'object'
-    && candidate.placement === 'candidate' && candidate.item_type === 'place');
+    && candidate.placement === 'candidate'
+    && (candidate.item_type === 'place' || candidate.item_type === 'other'));
 }
 
 function appendMobileCandidateSection(parent, snapshot, appendCandidate) {
@@ -854,7 +855,7 @@ function selectMobileTab(tab, {restoreState = null, sourceAlreadySaved = false} 
 function appendMobileItineraryClover(parent) {
   const clover = document.createElement('img');
   clover.className = 'mobile-itinerary-clover';
-  clover.src = './assets/mobile-clover.svg?pwa=v116';
+  clover.src = './assets/mobile-clover.svg?pwa=v117';
   clover.alt = '';
   clover.setAttribute('aria-hidden', 'true');
   parent.append(clover);
@@ -2398,7 +2399,7 @@ async function updateMobileStagingBuildVersion() {
 function diagnosticWorkerLabel(worker, response) {
   if (!worker) return 'なし';
   return response?.shellVersion === PWA_SHELL_VERSION && response?.cacheName === PWA_CACHE_NAME
-    ? 'あり（v116）' : 'あり（v116確認不可）';
+    ? 'あり（v117）' : 'あり（v117確認不可）';
 }
 
 async function showPwaDiagnostics() {

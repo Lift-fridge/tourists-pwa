@@ -41,26 +41,27 @@ const pwaDiagnosticsResult = document.getElementById('mobile-pwa-diagnostics-res
 const pwaDiagnosticsSection = document.getElementById('mobile-pwa-diagnostics');
 const mobileStagingBuild = document.getElementById('mobile-staging-build');
 
-const PWA_SHELL_VERSION = 'v117';
+const PWA_SHELL_VERSION = 'v131';
 const PWA_CACHE_PREFIX = 'travel-shiori-mobile-shell-';
 const PWA_CACHE_NAME = PWA_CACHE_PREFIX + PWA_SHELL_VERSION;
 const PWA_SHELL_ASSETS = [
-  './index.html?pwa=v117',
-  './mobile.js?pwa=v117',
-  './mobile.css?pwa=v117',
-  './mobile-snapshot-store.js?pwa=v117',
-  './mobile-share-request-ticket-store.js?pwa=v117',
-  './mobile-share-qr-code.js?pwa=v117',
-  './mobile-incoming-snapshot.js?pwa=v117',
-  './tourists-public-config.js?pwa=v117',
-  './assets/jsqr-1.4.0.js?pwa=v117',
-  './manifest.webmanifest?pwa=v117',
-  './assets/icon-192.png?pwa=v117',
-  './assets/icon-512.png?pwa=v117',
-  './assets/icon-maskable-512.png?pwa=v117',
-  './assets/mobile-cover.png?pwa=v117',
-  './assets/mobile-memo-list-background.png?pwa=v117',
-  './assets/mobile-clover.svg?pwa=v117',
+  './index.html?pwa=v131',
+  './mobile.js?pwa=v131',
+  './mobile-dock-v11.js?pwa=v131',
+  './mobile.css?pwa=v131',
+  './mobile-snapshot-store.js?pwa=v131',
+  './mobile-share-request-ticket-store.js?pwa=v131',
+  './mobile-share-qr-code.js?pwa=v131',
+  './mobile-incoming-snapshot.js?pwa=v131',
+  './tourists-public-config.js?pwa=v131',
+  './assets/jsqr-1.4.0.js?pwa=v131',
+  './manifest.webmanifest?pwa=v131',
+  './assets/icon-192.png?pwa=v131',
+  './assets/icon-512.png?pwa=v131',
+  './assets/icon-maskable-512.png?pwa=v131',
+  './assets/mobile-cover.png?pwa=v131',
+  './assets/mobile-memo-list-background.png?pwa=v131',
+  './assets/mobile-clover.svg?pwa=v131',
 ];
 
 let selectedMobileDayKey = null;
@@ -855,7 +856,7 @@ function selectMobileTab(tab, {restoreState = null, sourceAlreadySaved = false} 
 function appendMobileItineraryClover(parent) {
   const clover = document.createElement('img');
   clover.className = 'mobile-itinerary-clover';
-  clover.src = './assets/mobile-clover.svg?pwa=v117';
+  clover.src = './assets/mobile-clover.svg?pwa=v131';
   clover.alt = '';
   clover.setAttribute('aria-hidden', 'true');
   parent.append(clover);
@@ -1603,7 +1604,7 @@ function moveMobileCoverByWheel(direction) {
 }
 
 function startMobileCoverSwipe(event) {
-  if (event.target?.closest?.('.mobile-cover-brand')) return;
+  if (event.target?.closest?.('.mobile-cover-brand, .mobile-cover-dock, .mobile-dock-dialog')) return;
   if (mobileCover.hidden || mobileCoverLeaving
       || (event.pointerType === 'mouse' && (event.button !== 0 || mobilePreview.enabled))) return;
   // 復帰アニメーション中でも次のdragは受け付け、遅延状態を持ち越さない。
@@ -1704,6 +1705,7 @@ function showMobileCover(snapshot, {preservePreviewShiftLatch = false} = {}) {
   mobileCoverDestination.hidden = !destination;
   mobileCoverSavedAt.textContent = savedAt || '';
   mobileCoverSavedAt.hidden = !savedAt;
+  if (!mobilePreview.enabled) globalThis.TouristsDockV11?.show(snapshot);
   clearMobileCoverSettleTimer();
   clearSavedTripCrossfade();
   mobileCoverPointer = null;
@@ -2040,6 +2042,7 @@ async function removeSavedTrip(snapshot, event) {
     const ticket = await ticketStore.load(key);
     if (ticket !== null) await ticketStore.remove(key);
     await globalThis.MobileSnapshotStore.remove(key);
+    try { await globalThis.TouristsDockV11?.removeTrip(key); } catch (_) { /* A Dock cleanup failure must not undo successful travel deletion. */ }
     const snapshots = orderedSnapshots(await globalThis.MobileSnapshotStore.list());
     if (currentMobileSnapshot && globalThis.MobileSnapshotStore.tripKey(currentMobileSnapshot) === key) {
       clearCurrentMobileTrip();
@@ -2399,7 +2402,7 @@ async function updateMobileStagingBuildVersion() {
 function diagnosticWorkerLabel(worker, response) {
   if (!worker) return 'なし';
   return response?.shellVersion === PWA_SHELL_VERSION && response?.cacheName === PWA_CACHE_NAME
-    ? 'あり（v117）' : 'あり（v117確認不可）';
+    ? 'あり（v131）' : 'あり（v131確認不可）';
 }
 
 async function showPwaDiagnostics() {

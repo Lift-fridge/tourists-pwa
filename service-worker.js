@@ -2,13 +2,14 @@
 
 // GitHub Pagesのproject siteでも、Workerの登録scopeを基準にshellを解決する。
 const CACHE_PREFIX = 'travel-shiori-mobile-shell-';
-const SHELL_VERSION = 'v117';
-const PWA_SHELL_VERSION = 'v117';
+const SHELL_VERSION = 'v131';
+const PWA_SHELL_VERSION = 'v131';
 const CACHE_NAME = CACHE_PREFIX + SHELL_VERSION;
 const SCOPE_URL = new URL(self.registration.scope);
 const SHELL_PATHS = [
   'index.html',
   'mobile.js',
+  'mobile-dock-v11.js',
   'mobile.css',
   'mobile-snapshot-store.js',
   'mobile-share-request-ticket-store.js',
